@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="my_books">
+        <item>Scala Cookbook</item>
+        <item>Play Framework Recipes</item>
+        <item>How I Sold My Business: A Personal Diary</item>
+        <item>A Survival Guide for New Consultants</item>
+    </string-array>
+</resources>
