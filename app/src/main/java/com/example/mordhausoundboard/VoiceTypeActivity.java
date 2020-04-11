@@ -185,6 +185,8 @@ public class VoiceTypeActivity extends AppCompatActivity {
             return null;
         }
 
+        //hallo
+
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
