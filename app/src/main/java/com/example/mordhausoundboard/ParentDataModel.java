@@ -1,15 +1,15 @@
 package com.example.mordhausoundboard;
 
-import java.util.List;
+import java.util.ArrayList;
 
 class ParentDataModel {
 
     private String name;
-    private List<ChildDataModel> path_list;
 
-    ParentDataModel(String name, List<ChildDataModel> path_list){
+
+    ParentDataModel(String name){
         this.name = name;
-        this.path_list = path_list;
+
     }
 
     public String getName() {
@@ -20,11 +20,13 @@ class ParentDataModel {
         this.name = name;
     }
 
-    public List<ChildDataModel> getPath_list() {
-        return path_list;
+    String convertArrayToString(ArrayList<ChildDataModel> list){
+        String result ="";
+        for(int i =0;i<list.size();i++){
+            result += list.get(i)+"%";
+        }
+        return result;
     }
 
-    public void setPath_list(List<ChildDataModel> path_list) {
-        this.path_list = path_list;
-    }
+
 }

@@ -1,19 +1,18 @@
 package com.example.mordhausoundboard;
 
 import android.os.Bundle;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         rv.setLayoutManager(llm);
 
+        parentDataModelArrayList = new ArrayList<>();
         insertMockdata();
+
+
 
         RVAdapter adapter = new RVAdapter(parentDataModelArrayList,this);
         rv.setAdapter(adapter);
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+
+
     }
 
     @Override
@@ -73,13 +78,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     void insertMockdata(){
-        parentDataModelArrayList.add(new ParentDataModel("hallo 1",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 2",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 3",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 4",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 5",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 6",new ArrayList<ChildDataModel>()));
-        parentDataModelArrayList.add(new ParentDataModel("hallo 7",new ArrayList<ChildDataModel>()));
+
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Curelknight)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Englishman)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Raziel)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Reginald)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Scot)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Young)));
+
     }
 }

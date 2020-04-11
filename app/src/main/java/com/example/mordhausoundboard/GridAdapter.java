@@ -8,17 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-
 import java.util.List;
 
+
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
-    private List<String> mDataset;
-    private ImageLoader mImageLoader;
+    private List<ChildDataModel> mDataset;
+    Context context;
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -32,7 +30,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
             super(v);
             nameText = v.findViewById(R.id.name);
 
-            image.setDefaultImageResId(R.mipmap.ic_launcher);
+            //image.setDefaultImageResId(R.mipmap.ic_launcher);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -43,9 +41,10 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public GridAdapter(List<String> myDataset, Context mCOntext) {
-        Log.d("TEST",myDataset.get(0));
+    public GridAdapter(List<ChildDataModel> myDataset, Context mCOntext) {
+        Log.d("TEST",myDataset.get(0).getName());
         mDataset = myDataset;
+        context = mCOntext;
 
     }
 
@@ -69,7 +68,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         // - replace the contents of the view with that element
         //holder.mTextView.setText(mDataset.get(position).getName());
         Log.d("TEST","Printing Names onBindView Holder"+mDataset.get(position));
-        holder.nameText.setText(mDataset.get(position));
+        holder.nameText.setText(mDataset.get(position).getName());
 
 
     }
@@ -79,4 +78,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
+
+
+
+
 }

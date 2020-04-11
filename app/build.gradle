@@ -36,4 +36,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.0'
 //Add GSON to parse JSON response
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 }
