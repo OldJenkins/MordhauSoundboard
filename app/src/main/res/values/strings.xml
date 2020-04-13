@@ -3,17 +3,18 @@
     <string name="action_settings">Settings</string>
 
     <string name="Bernard">Bernard</string>
-    <string name="Curelknight">Settings</string>
-    <string name="Englishman">Settings</string>
-    <string name="Knight">Settings</string>
-    <string name="Raziel">Settings</string>
-    <string name="Reginald">Settings</string>
-    <string name="Scot">Settings</string>
-    <string name="Barbarian">Settings</string>
-    <string name="Young">Settings</string>
+    <string name="Curelknight">CruelKnight</string>
+    <string name="Englishman">Englishman</string>
+    <string name="Knight">Knight</string>
+    <string name="Raziel">Raziel</string>
+    <string name="Reginald">Reginald</string>
+    <string name="Scot">Scot</string>
+    <string name="Barbarian">Barbarian</string>
+    <string name="Young">Young</string>
 
-    <string name="downloadPath">https://drinkhub.org/sounds/</string>
-    <string name="fetching_error"> Could not fetch and Items. Sorry :(</string>
+    <string name="downloadPath">https://drinkhub.eu/MordhauSoundboard/</string>
+    <string name="fetching_error"> Sorry :( Could not fetch any Items</string>
+    <string name="Media_not_found"> Sorry, the Media could not be found :(</string>
 
 
 </resources>

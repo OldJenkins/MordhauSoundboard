@@ -2,21 +2,22 @@ package com.example.mordhausoundboard;
 
 public class ChildDataModel {
 
-    String name;
-    String path;
+    private String name;
+    private String url;
+    private boolean favourite;
 
-    ChildDataModel(String name,String path){
+
+    ChildDataModel(String name,String url){
         this.name = name;
-        this.path = path;
+        this.url = url;
     }
 
-
-    public String getPath() {
-        return path;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getName() {
@@ -25,5 +26,13 @@ public class ChildDataModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
     }
 }

@@ -2,15 +2,21 @@ package com.example.mordhausoundboard;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -23,12 +29,13 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView nameText;
-        public TextView phoneText;
-        public NetworkImageView image;
+
+        CardView cardView;
         @SuppressLint("WrongViewCast")
         public ViewHolder(View v) {
             super(v);
             nameText = v.findViewById(R.id.name);
+            cardView = v.findViewById(R.id.cardView);
 
             //image.setDefaultImageResId(R.mipmap.ic_launcher);
             v.setOnClickListener(new View.OnClickListener() {
@@ -63,12 +70,32 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         //holder.mTextView.setText(mDataset.get(position).getName());
         Log.d("TEST","Printing Names onBindView Holder"+mDataset.get(position));
         holder.nameText.setText(mDataset.get(position).getName());
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setDataSource(mDataset.get(position).getUrl());
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, context.getResources().getString(R.string.Media_not_found), Toast.LENGTH_SHORT).show();
+                    Snackbar snackbar = Snackbar
+                            .make(v.findViewById(R.id.coordHome), R.string.Media_not_found, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+
+            }
+        });
+
 
 
     }

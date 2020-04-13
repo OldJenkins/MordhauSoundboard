@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     void insertMockdata(){
 
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Bernard)));
         parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Curelknight)));
         parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Englishman)));
         parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));

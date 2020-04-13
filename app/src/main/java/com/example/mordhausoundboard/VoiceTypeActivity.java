@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -59,10 +60,6 @@ public class VoiceTypeActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("NAME");
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
-
-
-
-
         mLayoutManager = new GridLayoutManager(context,2);
         mRecyclerView = findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -70,7 +67,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         //mRecyclerView.setAdapter(new GridAdapter(SoundItemList,getApplicationContext()));
 
-        new getAllContentAsync().execute(name,getResources().getString(R.string.downloadPath));
+        new getAllContentAsync().execute(name);
 
 
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -78,7 +75,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
             public void onRefresh() {
 
                 isRefresh = true;
-                new getAllContentAsync().execute(name,getResources().getString(R.string.downloadPath));
+                new getAllContentAsync().execute(name);
 
 
             }
@@ -108,15 +105,6 @@ public class VoiceTypeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    ArrayList<String> convertStringToArray(String convertable){
-
-        String[]splitted = convertable.split("%");
-        return new ArrayList( Arrays.asList( splitted ) );
-    }
-
-
-
-
 
     public class getAllContentAsync extends AsyncTask<String,Void,String> {
 
@@ -130,6 +118,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
 
             pullToRefresh.setRefreshing(true);
+            json_url = getResources().getString(R.string.downloadPath)+"getDirectorycontent.php";
 
         }
 
@@ -137,12 +126,10 @@ public class VoiceTypeActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             name = params[0];
-            json_url = params[1];
             String data;
 
 
             try {
-
 
                 URL url = new URL(json_url);
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection)url.openConnection();
@@ -185,7 +172,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
             return null;
         }
 
-        //hallo
+
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -199,16 +186,14 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
                 if (!result.equals("") && !result.contains("failed") && isJSONValid(result)) {
 
+
                     Gson gson = new Gson();
                     Type listType = new TypeToken<List<ChildDataModel>>() {
                     }.getType();
 
                     List<ChildDataModel> posts = gson.fromJson(result, listType);
                     ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
-                    mRecyclerView.setAdapter(new GridAdapter(spiele,getApplicationContext()));
-
-
-
+                    mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele),getApplicationContext()));
 
                 }
 
@@ -218,14 +203,13 @@ public class VoiceTypeActivity extends AppCompatActivity {
                 snackbar.show();
             }
 
-
             pullToRefresh.setRefreshing(false);
             isRefresh = false;
 
         }
 
 
-        public boolean isJSONValid(String test) {
+        boolean isJSONValid(String test) {
             try {
                 new JSONObject(test);
             } catch (JSONException ex) {
@@ -240,7 +224,23 @@ public class VoiceTypeActivity extends AppCompatActivity {
             return true;
         }
 
+    }
 
+    ArrayList<ChildDataModel> removeDataSuffix(ArrayList<ChildDataModel> that){
+        for (int i =  0; i<that.size();i++){
+            String str = that.get(i).getName();
+            if (null != str && str.length() > 0 )
+            {
+                int endIndex = str.lastIndexOf(".");
+                if (endIndex != -1)
+                {
+                    str = str.replace("_"," ");
+                    that.get(i).setName(str.substring(0, endIndex));
+
+                }
+            }
+        }
+        return that;
     }
 
 

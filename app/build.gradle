@@ -31,7 +31,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.2.1'
     implementation 'androidx.navigation:navigation-ui:2.2.1'
 
-
+    implementation 'com.github.ivbaranov:materialfavoritebutton:0.1.5'
     //Add Volley to make HTTPCalls
     implementation 'com.android.volley:volley:1.1.0'
 //Add GSON to parse JSON response
