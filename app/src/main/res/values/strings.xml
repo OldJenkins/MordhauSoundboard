@@ -16,5 +16,8 @@
     <string name="fetching_error"> Sorry :( Could not fetch any Items</string>
     <string name="Media_not_found"> Sorry, the Media could not be found :(</string>
 
+    <string name="Home">Home</string>
+    <string name="Favourites">Favourites</string>
+
 
 </resources>

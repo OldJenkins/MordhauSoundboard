@@ -1,23 +1,22 @@
 package com.example.mordhausoundboard;
 
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<ParentDataModel> parentDataModelArrayList;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,36 +24,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextAppearance(getApplicationContext(),R.style.TitleFont);
 
-        RecyclerView rv = findViewById(R.id.rv);
-        rv.setHasFixedSize(true);
+        viewPager = findViewById(R.id.viewPager);
+        addTabs(viewPager);
 
-        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
-        rv.setLayoutManager(llm);
-
-        parentDataModelArrayList = new ArrayList<>();
-        insertMockdata();
-
-
-
-        RVAdapter adapter = new RVAdapter(parentDataModelArrayList,this);
-        rv.setAdapter(adapter);
-
-
-
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-
+        tabLayout = findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
 
     }
+
+    private void addTabs(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new Home(), getResources().getString(R.string.Home));
+        adapter.addFrag(new Favourites(), getResources().getString(R.string.Favourites));
+        viewPager.setAdapter(adapter);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,17 +64,32 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    void insertMockdata(){
+        ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
 
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Bernard)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Curelknight)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Englishman)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Raziel)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Reginald)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Scot)));
-        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Young)));
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
 
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

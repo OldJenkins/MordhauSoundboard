@@ -1,6 +1,6 @@
 package com.example.mordhausoundboard;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,20 +8,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -34,17 +29,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import javax.net.ssl.HttpsURLConnection;
 
 public class VoiceTypeActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-    private Context context;
-    private List<ChildDataModel> SoundItemList = new ArrayList<>();
     String name;
     SwipeRefreshLayout pullToRefresh;
     boolean isRefresh;
@@ -55,29 +46,30 @@ public class VoiceTypeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicetype);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        name = getIntent().getStringExtra("NAME");
+
+        name = getIntent().getStringExtra(Constants.ITEMNAME);
+        toolbar.setTitle(name);
+        toolbar.setTitleTextAppearance(getApplicationContext(),R.style.TitleFont);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
-        mLayoutManager = new GridLayoutManager(context,2);
+        mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
         mRecyclerView = findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         //mRecyclerView.setAdapter(new GridAdapter(SoundItemList,getApplicationContext()));
 
         new getAllContentAsync().execute(name);
 
-
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
                 isRefresh = true;
                 new getAllContentAsync().execute(name);
-
-
             }
         });
 
@@ -101,25 +93,19 @@ public class VoiceTypeActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
 
     public class getAllContentAsync extends AsyncTask<String,Void,String> {
-
         String name;
         String json_url;
         String JSON_STRING;
 
-
         @Override
         protected void onPreExecute() {
-
-
             pullToRefresh.setRefreshing(true);
             json_url = getResources().getString(R.string.downloadPath)+"getDirectorycontent.php";
-
         }
 
         @Override
@@ -128,22 +114,17 @@ public class VoiceTypeActivity extends AppCompatActivity {
             name = params[0];
             String data;
 
-
             try {
-
                 URL url = new URL(json_url);
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection)url.openConnection();
                 httpsURLConnection.setConnectTimeout(15000);
                 httpsURLConnection.setReadTimeout(15000);
-
                 httpsURLConnection.setRequestMethod("POST");
                 httpsURLConnection.setDoOutput(true);
                 OutputStream OS = httpsURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
 
-
                 data = URLEncoder.encode("name","UTF-8") + "=" +URLEncoder.encode(name,"UTF-8");
-
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
@@ -168,11 +149,8 @@ public class VoiceTypeActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return null;
         }
-
-
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -186,28 +164,24 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
                 if (!result.equals("") && !result.contains("failed") && isJSONValid(result)) {
 
-
                     Gson gson = new Gson();
                     Type listType = new TypeToken<List<ChildDataModel>>() {
                     }.getType();
 
                     List<ChildDataModel> posts = gson.fromJson(result, listType);
                     ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
-                    mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele),getApplicationContext()));
-
+                    mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele),getApplicationContext(),1));
                 }
 
             }else{
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(R.id.coordHome), R.string.fetching_error, Snackbar.LENGTH_LONG);
+                        .make(findViewById(R.id.coord_VoiceType), R.string.fetching_error, Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
 
             pullToRefresh.setRefreshing(false);
             isRefresh = false;
-
         }
-
 
         boolean isJSONValid(String test) {
             try {
@@ -223,7 +197,6 @@ public class VoiceTypeActivity extends AppCompatActivity {
             }
             return true;
         }
-
     }
 
     ArrayList<ChildDataModel> removeDataSuffix(ArrayList<ChildDataModel> that){
@@ -236,7 +209,6 @@ public class VoiceTypeActivity extends AppCompatActivity {
                 {
                     str = str.replace("_"," ");
                     that.get(i).setName(str.substring(0, endIndex));
-
                 }
             }
         }
@@ -244,4 +216,15 @@ public class VoiceTypeActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(VoiceTypeActivity.this,MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }

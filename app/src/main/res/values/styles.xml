@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="TitleFont">
+        <item name="android:fontFamily">@font/medievalsharp</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
 </resources>

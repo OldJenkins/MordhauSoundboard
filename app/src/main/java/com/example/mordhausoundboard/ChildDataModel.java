@@ -1,10 +1,18 @@
 package com.example.mordhausoundboard;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "Child_Table")
 public class ChildDataModel {
 
+    @PrimaryKey
+    @NonNull
     private String name;
     private String url;
     private boolean favourite;
+    private boolean isDownloaded;
 
 
     ChildDataModel(String name,String url){
@@ -34,5 +42,20 @@ public class ChildDataModel {
 
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
+    }
+
+    public boolean isDownloaded() {
+        return isDownloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        isDownloaded = downloaded;
+    }
+
+    void setChild(ChildDataModel child){
+        this.name = child.name;
+        this.url = child.url;
+        this.favourite = child.favourite;
+        this.isDownloaded = child.isDownloaded;
     }
 }

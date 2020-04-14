@@ -21,6 +21,7 @@
 
         <activity
             android:name=".VoiceTypeActivity"
+            android:screenOrientation="fullSensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 

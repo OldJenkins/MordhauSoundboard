@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:clickable="true"
-    app:cardBackgroundColor="@color/itemcolor"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:focusable="true"
+    app:cardBackgroundColor="@color/gridcard_background"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,18 +21,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-
             android:layout_marginStart="8dp"
             android:maxLines="3"
             android:text="Gude"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/materialFavoriteButton"
+            app:layout_constraintStart_toEndOf="@+id/btn_favourite"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.github.ivbaranov.mfb.MaterialFavoriteButton
-            android:id="@+id/materialFavoriteButton"
+            android:id="@+id/btn_favourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
