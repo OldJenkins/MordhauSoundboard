@@ -14,11 +14,14 @@ public interface DaoChildData {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ChildDataModel child);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<ChildDataModel> list);
+
     @Query("DELETE FROM Child_Table")
     void deleteAll();
 
-    @Query("SELECT * from Child_Table ORDER BY name DESC")
-    List<ChildDataModel> getAllChilds();
+    @Query("SELECT * from Child_Table WHERE parent = :name ORDER BY name DESC")
+    List<ChildDataModel> getAllChilds(String name);
 
     @Delete
     void delete(ChildDataModel child);

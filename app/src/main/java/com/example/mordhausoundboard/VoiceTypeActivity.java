@@ -1,6 +1,8 @@
 package com.example.mordhausoundboard;
 
+import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +42,9 @@ public class VoiceTypeActivity extends AppCompatActivity {
     String name;
     SwipeRefreshLayout pullToRefresh;
     boolean isRefresh;
-
+    SharedPreferences prefs;
+    boolean isListAlreadyDownloaded;
+    private Repository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +62,31 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
+        prefs = getApplicationContext().getSharedPreferences(Constants.PREFS,0);
+        repository = new Repository((Application) getApplicationContext());
+
+        // return TRUE if the Parent name list, is inside of the Saved List
+        isListAlreadyDownloaded = prefs.getString(Constants.DOWNLOADLIST,"").contains(name);
+
         mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
         mRecyclerView = findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         //mRecyclerView.setAdapter(new GridAdapter(SoundItemList,getApplicationContext()));
 
-        new getAllContentAsync().execute(name);
+        //if The List was already downloaded before, the List wil be catched from the Database
+        if(!isListAlreadyDownloaded) {
+            new getAllContentAsync().execute(name);
+            Toast.makeText(this, "taken from FTP - " + name, Toast.LENGTH_SHORT).show();
+
+        }else{
+            List<ChildDataModel> list = repository.getmAllChildsbyName(name);
+            ArrayList<ChildDataModel> spiele = new ArrayList<>(list);
+            if(spiele.size()>0) {
+                mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele), getApplicationContext(), 1));
+                Toast.makeText(this, "taken from Database", Toast.LENGTH_SHORT).show();
+            }
+        }
 
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -171,6 +194,9 @@ public class VoiceTypeActivity extends AppCompatActivity {
                     List<ChildDataModel> posts = gson.fromJson(result, listType);
                     ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
                     mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele),getApplicationContext(),1));
+                    prefs.edit().putString(Constants.DOWNLOADLIST,"%"+name).apply();
+
+                    repository.insertAll(posts);
                 }
 
             }else{
@@ -178,6 +204,8 @@ public class VoiceTypeActivity extends AppCompatActivity {
                         .make(findViewById(R.id.coord_VoiceType), R.string.fetching_error, Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
+
+
 
             pullToRefresh.setRefreshing(false);
             isRefresh = false;

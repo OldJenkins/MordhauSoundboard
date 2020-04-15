@@ -2,35 +2,39 @@ package com.example.mordhausoundboard;
 
 import android.app.Application;
 import android.os.AsyncTask;
-
 import java.util.List;
 
-public class Repository {
+class Repository {
 
     private DaoChildData daoChildData;
     private List<ChildDataModel> mAllChildsByName;
+    private String name;
 
-    public Repository(Application application) {
+    Repository(Application application) {
         Database db = Database.getDatabase(application);
         daoChildData = db.personDao();
-        mAllChildsByName = daoChildData.getAllChilds();
+
     }
 
-    List<ChildDataModel> getmAllChildsbyName() {
+    List<ChildDataModel> getmAllChildsbyName(String name) {
+        this.name = name;
+        mAllChildsByName = daoChildData.getAllChilds(name);
         return mAllChildsByName;
     }
 
-    public void insert (ChildDataModel child) {
+    void insert (ChildDataModel child) {
         new insertAsyncTask(daoChildData).execute(child);
     }
 
-    public void update (ChildDataModel child) {
+    void update (ChildDataModel child) {
         new UpdateAsyncTask(daoChildData).execute(child);
     }
 
-    public void delete (ChildDataModel child) {
+    void delete (ChildDataModel child) {
         new deleteAsyncTask(daoChildData).execute(child);
     }
+
+    void insertAll (List<ChildDataModel> childList) {new InsertAllAsyncTask(daoChildData).execute(childList);}
 
     private static class insertAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
 
@@ -43,6 +47,21 @@ public class Repository {
         @Override
         protected Void doInBackground(final ChildDataModel... params) {
             mAsyncTaskDao.insert(params[0]);
+            return null;
+        }
+    }
+
+    private static class InsertAllAsyncTask extends AsyncTask<List<ChildDataModel>, Void, Void> {
+
+        private DaoChildData mAsyncTaskDao;
+
+        InsertAllAsyncTask(DaoChildData dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(List<ChildDataModel>... lists) {
+            mAsyncTaskDao.insertAll(lists[0]);
             return null;
         }
     }

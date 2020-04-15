@@ -8,14 +8,15 @@ import java.util.List;
 public class ViewModel extends AndroidViewModel {
     private Repository mRepository;
     private List<ChildDataModel> mAllChildsByName;
+    private String name;
 
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
-        mAllChildsByName = mRepository.getmAllChildsbyName();
+        mAllChildsByName = mRepository.getmAllChildsbyName(name);
     }
 
-    List<ChildDataModel> getmAllChildsByName() { return mAllChildsByName; }
+    List<ChildDataModel> getmAllChildsByName(String name) { return mAllChildsByName; }
 
     public void insert(ChildDataModel child) { mRepository.insert(child); }
 

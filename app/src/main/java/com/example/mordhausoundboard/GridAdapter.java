@@ -108,16 +108,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
                     public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
                         ChildDataModel child = mDataset.get(position);
                         child.setFavourite(favorite);
-                        if(favorite){
-                            repository.delete(child);
-                            holder.btn_favourite.setAnimateUnfavorite(true);
-                            Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            repository.insert(child);
-                            holder.btn_favourite.setAnimateFavorite(true);
-                            Toast.makeText(context, "inserted", Toast.LENGTH_SHORT).show();
-                        }
+                        repository.update(child);
+                        holder.btn_favourite.setAnimateUnfavorite(true);
                         mDataset.get(position).setChild(child);
                     }
                 });

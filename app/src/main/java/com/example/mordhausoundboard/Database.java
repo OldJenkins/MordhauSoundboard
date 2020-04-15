@@ -4,7 +4,7 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@androidx.room.Database(entities = {ChildDataModel.class}, version = 1)
+@androidx.room.Database(entities = {ChildDataModel.class}, version = 3)
 public abstract class Database extends RoomDatabase {
     public abstract DaoChildData personDao();
     private static Database INSTANCE;

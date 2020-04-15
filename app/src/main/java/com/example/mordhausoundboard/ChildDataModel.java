@@ -9,7 +9,10 @@ public class ChildDataModel {
 
     @PrimaryKey
     @NonNull
+    private String id;
+
     private String name;
+    private String parent;
     private String url;
     private boolean favourite;
     private boolean isDownloaded;
@@ -18,6 +21,15 @@ public class ChildDataModel {
     ChildDataModel(String name,String url){
         this.name = name;
         this.url = url;
+    }
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(@NonNull String id) {
+        this.id = id;
     }
 
     public String getUrl() {
@@ -52,10 +64,20 @@ public class ChildDataModel {
         isDownloaded = downloaded;
     }
 
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
     void setChild(ChildDataModel child){
         this.name = child.name;
         this.url = child.url;
         this.favourite = child.favourite;
         this.isDownloaded = child.isDownloaded;
+        this.parent = child.parent;
     }
+
 }

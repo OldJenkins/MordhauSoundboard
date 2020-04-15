@@ -53,9 +53,11 @@ public class Favourites extends Fragment {
     }
 
     void RefreshAdapter(){
-        List<ChildDataModel> posts = repository.getmAllChildsbyName();
+        List<ChildDataModel> posts = repository.getmAllChildsbyName("gude");
         ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
-        mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele),getActivity().getApplicationContext(),1));
+        if(spiele.size()>0) {
+            mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele), getActivity().getApplicationContext(), 1));
+        }
     }
 
 
