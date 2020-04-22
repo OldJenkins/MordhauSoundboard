@@ -7,13 +7,16 @@ import java.util.List;
 class Repository {
 
     private DaoChildData daoChildData;
+    private DaoParentData daoParentData;
     private List<ChildDataModel> mAllChildsByName;
+    private List<ChildDataModel> mAllFavourites;
+    private List<ParentDataModel> mAllParents;
     private String name;
 
     Repository(Application application) {
         Database db = Database.getDatabase(application);
         daoChildData = db.personDao();
-
+        daoParentData = db.parentDao();
     }
 
     List<ChildDataModel> getmAllChildsbyName(String name) {
@@ -22,12 +25,35 @@ class Repository {
         return mAllChildsByName;
     }
 
+    List<ChildDataModel> getAllFavourites() {
+        mAllFavourites = daoChildData.getAllFavourites();
+        return mAllFavourites;
+    }
+
+    List<ParentDataModel> getAllParents() {
+        mAllParents = daoParentData.getAllParents();
+        return mAllParents;
+
+    }
+
+    ParentDataModel getParent(String name){
+        return daoParentData.getParent(name);
+    }
+
     void insert (ChildDataModel child) {
         new insertAsyncTask(daoChildData).execute(child);
     }
 
+    void insertParent (ParentDataModel parent) {
+        new insertParentAsyncTask(daoParentData).execute(parent);
+    }
+
     void update (ChildDataModel child) {
         new UpdateAsyncTask(daoChildData).execute(child);
+    }
+
+    void updateParent (ParentDataModel parent) {
+        new UpdateParentAsyncTask(daoParentData).execute(parent);
     }
 
     void delete (ChildDataModel child) {
@@ -47,6 +73,21 @@ class Repository {
         @Override
         protected Void doInBackground(final ChildDataModel... params) {
             mAsyncTaskDao.insert(params[0]);
+            return null;
+        }
+    }
+
+    private static class insertParentAsyncTask extends AsyncTask<ParentDataModel, Void, Void> {
+
+        private DaoParentData mAsyncTaskDao;
+
+        insertParentAsyncTask(DaoParentData dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final ParentDataModel... params) {
+            mAsyncTaskDao.insertParent(params[0]);
             return null;
         }
     }
@@ -76,6 +117,21 @@ class Repository {
 
         @Override
         protected Void doInBackground(final ChildDataModel... params) {
+            mAsyncTaskDao.update(params[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateParentAsyncTask extends AsyncTask<ParentDataModel, Void, Void> {
+
+        private DaoParentData mAsyncTaskDao;
+
+        UpdateParentAsyncTask(DaoParentData dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final ParentDataModel... params) {
             mAsyncTaskDao.update(params[0]);
             return null;
         }

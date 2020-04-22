@@ -1,33 +1,25 @@
 package com.example.mordhausoundboard;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import org.michaelbel.bottomsheet.BottomSheet;
 import java.util.ArrayList;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
 
     private ArrayList<ParentDataModel> parents;
     private Activity activity;
+    private BottomSheet bottomSheet;
 
     RVAdapter(ArrayList<ParentDataModel> parents, Activity activity){
         this.parents = parents;
@@ -44,6 +36,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull PersonViewHolder holder, final int position) {
         holder.parentName.setText(parents.get(position).getName());
+        if(!parents.get(position).isAllItemsDownloaded()){
+            holder.isDownloaded.setVisibility(View.INVISIBLE);
+        }
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +46,53 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
                 Intent intent = new Intent(activity, VoiceTypeActivity.class);
                 intent.putExtra(Constants.ITEMNAME, parents.get(position).getName());
                 activity.startActivity(intent);
+            }
+        });
+
+        holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(activity, "clicked long", Toast.LENGTH_SHORT).show();
+
+                final BottomSheet.Builder builder = new BottomSheet.Builder(activity);
+                builder.setTitle(parents.get(position).getName());
+                builder.setMenu(R.menu.bottomsheet_parent, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        switch (which) {
+
+                            case 0:
+                                Toast.makeText(activity, "downloaded", Toast.LENGTH_SHORT).show();
+                                builder.dismiss();
+                                break;
+
+                            case 1:
+                                Toast.makeText(activity, "deleted", Toast.LENGTH_SHORT).show();
+                                builder.dismiss();
+
+                                break;
+
+                            case 2:
+                                Toast.makeText(activity, "canceld", Toast.LENGTH_SHORT).show();
+                                builder.dismiss();
+
+                                break;
+                        }
+
+                    }
+                });
+
+                builder.show();
+
+
+
+
+
+
+
+
+                return true;
             }
         });
     }
@@ -69,12 +111,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
         CardView cv;
         TextView parentName;
         ImageView personPhoto;
+        ImageView isDownloaded;
 
         PersonViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cardView);
             parentName = itemView.findViewById(R.id.person_name);
             personPhoto = itemView.findViewById(R.id.person_photo);
+            isDownloaded = itemView.findViewById(R.id.isDownloaded);
         }
 
     }

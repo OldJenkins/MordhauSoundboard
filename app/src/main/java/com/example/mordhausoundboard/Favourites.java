@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +15,6 @@ public class Favourites extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-    private SwipeRefreshLayout pullToRefresh;
-    private boolean isRefresh;
     private Repository repository;
 
     @Override
@@ -33,19 +30,10 @@ public class Favourites extends Fragment {
         repository = new Repository((Application) getActivity().getApplicationContext());
         mLayoutManager = new GridLayoutManager(getContext(),2);
 
-        pullToRefresh = v.findViewById(R.id.pullToRefresh);
+
         mRecyclerView = v.findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-
-        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                isRefresh = true;
-                RefreshAdapter();
-                pullToRefresh.setRefreshing(false);
-            }
-        });
 
         RefreshAdapter();
 
@@ -53,7 +41,7 @@ public class Favourites extends Fragment {
     }
 
     void RefreshAdapter(){
-        List<ChildDataModel> posts = repository.getmAllChildsbyName("gude");
+        List<ChildDataModel> posts = repository.getAllFavourites();
         ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
         if(spiele.size()>0) {
             mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele), getActivity().getApplicationContext(), 1));

@@ -19,5 +19,12 @@
     <string name="Home">Home</string>
     <string name="Favourites">Favourites</string>
 
+    <string name="download">Download</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
+
+
+
 
 </resources>

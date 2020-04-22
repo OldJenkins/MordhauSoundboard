@@ -16,6 +16,7 @@ public class ChildDataModel {
     private String url;
     private boolean favourite;
     private boolean isDownloaded;
+    private String rawname;
 
 
     ChildDataModel(String name,String url){
@@ -80,4 +81,11 @@ public class ChildDataModel {
         this.parent = child.parent;
     }
 
+    public String getRawname() {
+        return rawname;
+    }
+
+    public void setRawname(String rawname) {
+        this.rawname = rawname;
+    }
 }

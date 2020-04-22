@@ -23,6 +23,10 @@ public interface DaoChildData {
     @Query("SELECT * from Child_Table WHERE parent = :name ORDER BY name DESC")
     List<ChildDataModel> getAllChilds(String name);
 
+    @Query("SELECT * from Child_Table WHERE favourite = 1 ORDER BY name DESC")
+    List<ChildDataModel> getAllFavourites();
+
+
     @Delete
     void delete(ChildDataModel child);
 
