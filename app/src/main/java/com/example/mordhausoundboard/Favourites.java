@@ -44,7 +44,7 @@ public class Favourites extends Fragment {
         List<ChildDataModel> posts = repository.getAllFavourites();
         ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
         if(spiele.size()>0) {
-            mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele), getActivity().getApplicationContext(), 1));
+            mRecyclerView.setAdapter(new GridAdapter(removeDataSuffix(spiele), getActivity().getApplicationContext(), 2, getActivity(),getParentFragmentManager()));
         }
     }
 

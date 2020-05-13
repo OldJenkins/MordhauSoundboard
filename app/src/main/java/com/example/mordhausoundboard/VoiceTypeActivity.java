@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Environment;
@@ -49,12 +50,13 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class VoiceTypeActivity extends AppCompatActivity {
+public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.BottomSheetListener {
 
     RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -101,13 +103,11 @@ public class VoiceTypeActivity extends AppCompatActivity {
         if(!isListAlreadyDownloaded) {
             new getAllContentAsync().execute(name);
 
-
-
         }else{
             List<ChildDataModel> list = repository.getmAllChildsbyName(name);
             ArrayList<ChildDataModel> spiele = new ArrayList<>(list);
             if(spiele.size()>0) {
-                adapter = new GridAdapter(removeDataSuffix(spiele), getApplicationContext(), 1);
+                adapter = new GridAdapter(removeDataSuffix(spiele), getApplicationContext(), 1,this, getSupportFragmentManager());
                 mRecyclerView.setAdapter(adapter);
 
             }
@@ -135,17 +135,42 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_download) {
-            int howManyItems = 0;
-            if(adapter != null) {
-                for (int i = 0; i < adapter.getItemCount(); i++) {
-                    if (!adapter.getItem(i).isDownloaded()) {
-                        howManyItems++;
-                    }
-                }
-                Toast.makeText(this, "all items are downloaded " + howManyItems, Toast.LENGTH_SHORT).show();
-                handleDownloadByNMobileData(howManyItems);
-            }
 
+
+            if(!parent.isAllItemsDownloaded()) {
+                int howManyItems = 0;
+                if (adapter != null) {
+                    for (int i = 0; i < adapter.getItemCount(); i++) {
+                        if (!adapter.getItem(i).isDownloaded()) {
+                            howManyItems++;
+                        }
+                    }
+                    handleDownloadByNMobileData(howManyItems);
+                }
+            }else Toast.makeText(this, "The items are already downloaded", Toast.LENGTH_SHORT).show();
+            //TODO IMPLEMENT DIALOG TO SAY FAVOURITES ARE DELETED
+            return true;
+        }
+        if (id == R.id.action_delete) {
+            final Dialog dialog = new Dialog(this);
+            dialog.setTitle("Speicher Leeren ?");
+            dialog.setContentView(R.layout.dialog_delete);
+            Button delete = dialog.findViewById(R.id.btn_delete);
+            Button cancel = dialog.findViewById(R.id.btn_cancel);
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteParent(parent);
+                    dialog.dismiss();
+                }
+            });
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -163,16 +188,19 @@ public class VoiceTypeActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onButtonClicked(int which) {
+        Toast.makeText(this, "sohnenhur", Toast.LENGTH_SHORT).show();
+    }
+
     public class getAllContentAsync extends AsyncTask<String,Void,String> {
         String name;
         String json_url;
         String JSON_STRING;
 
-
         @Override
         protected void onPreExecute() {
-            json_url = getResources().getString(R.string.downloadPath)+"getDirectorycontent.php";
-
+            json_url = getResources().getString(R.string.rootPath)+"getDirectorycontent.php";
 
         }
 
@@ -239,18 +267,26 @@ public class VoiceTypeActivity extends AppCompatActivity {
                     Type listType = new TypeToken<List<ChildDataModel>>() {
                     }.getType();
 
-                    List<ChildDataModel> posts = gson.fromJson(result, listType);
-                    ArrayList<ChildDataModel> spiele = new ArrayList<>(posts);
-                    adapter = new GridAdapter(removeDataSuffix(spiele),getApplicationContext(),1);
-                    mRecyclerView.setAdapter(adapter);
+                    List<ChildDataModel> newList = gson.fromJson(result, listType);
+                    ArrayList<ChildDataModel> newArrayList = new ArrayList<>(newList);
+
+                    List<ChildDataModel> oldList = repository.getmAllChildsbyName(name);
+
+                    for(int i = 0;i < newList.size();i++){
+
+                        for(int j  = 0;j<oldList.size();j++){
+                            if(newList.get(i).AlmostEquals(oldList.get(j))){
+                                newList.get(i).setChild(oldList.get(i));
+                            }
+                        }
+                    }
+
+
+                    repository.insertAll(newList);
 
                     prefs.edit().putString(Constants.DOWNLOADLIST,prefs.getString(Constants.DOWNLOADLIST,"")+"%"+name).apply();
-
-                    repository.insertAll(posts);
-
-                    if(!parent.isAllItemsDownloaded()&&!parent.isAskedForDownload()){
-                        handleDownloadByNMobileData(adapter.getItemCount());
-                    }
+                    adapter = new GridAdapter(removeDataSuffix(newArrayList),getApplicationContext(),1,VoiceTypeActivity.this,getSupportFragmentManager());
+                    mRecyclerView.setAdapter(adapter);
 
 
 
@@ -307,6 +343,15 @@ public class VoiceTypeActivity extends AppCompatActivity {
                     }
                 }
 
+
+            if(isAllDownloaded()){
+                Toast.makeText(VoiceTypeActivity.this, "All items Downloaded", Toast.LENGTH_SHORT).show();
+                parent.setAllItemsDownloaded(true);
+                repository.updateParent(parent);
+
+            }
+            else Toast.makeText(VoiceTypeActivity.this, "Could not download all items", Toast.LENGTH_SHORT).show();
+
             return null;
         }
 
@@ -320,13 +365,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             dialog.dismiss();
-            if(isAllDownloaded()){
-                Toast.makeText(VoiceTypeActivity.this, "All items Downloaded", Toast.LENGTH_SHORT).show();
-                parent.setAllItemsDownloaded(true);
-                repository.updateParent(parent);
-                adapter.notifyDataSetChanged();
-            }
-            else Toast.makeText(VoiceTypeActivity.this, "Could not download all items", Toast.LENGTH_SHORT).show();
+            adapter.notifyDataSetChanged();
         }
 
     }
@@ -378,7 +417,7 @@ public class VoiceTypeActivity extends AppCompatActivity {
 
 
         /*get the path to internal storage*/
-        File path = Environment.getExternalStorageDirectory();
+
 
         request1.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/MordhauSoundboard/"+child.getRawname());
 
@@ -459,5 +498,38 @@ public class VoiceTypeActivity extends AppCompatActivity {
                 dialog.show();
             }
        //}else Toast.makeText(this, "permission not granted", Toast.LENGTH_SHORT).show();
+    }
+
+    void deleteParent(ParentDataModel parent){
+
+        List<ChildDataModel> childList = repository.getmAllChildsbyName(parent.getName());
+
+        for(int i = 0;i<childList.size();i++){
+            ChildDataModel child = childList.get(i);
+            if(child.isDownloaded()) {
+                File file = new File(child.getUrl());
+                file.delete();
+
+                child.setUrl(getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname());
+                child.setDownloaded(false);
+                repository.update(child);
+            }
+        }
+        parent.clearDownloads();
+        repository.updateParent(parent);
+
+        String savedList = prefs.getString(Constants.DOWNLOADLIST,"");
+        List<String> list = new ArrayList<String>(Arrays.asList(savedList.split("%")));
+        String resultList="";
+
+        for(int i =0; i<list.size();i++){
+            list.remove(parent.getName());
+        }
+        for(int i =0; i<list.size();i++){
+            resultList += "%"+list.get(i);
+        }
+        prefs.edit().putString(Constants.DOWNLOADLIST,resultList).apply();
+        Toast.makeText(VoiceTypeActivity.this, "deleted Content of "+ parent.getName() , Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
     }
 }

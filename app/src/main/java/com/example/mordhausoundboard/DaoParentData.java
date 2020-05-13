@@ -20,6 +20,9 @@ public interface DaoParentData {
     @Query("SELECT * from Parent_Table WHERE name = :name LIMIT 1")
     ParentDataModel getParent(String name);
 
+    @Query("SELECT COUNT(name) from PARENT_TABLE")
+    int getCount();
+
     @Update
     void update(ParentDataModel... parentDataModels);
 

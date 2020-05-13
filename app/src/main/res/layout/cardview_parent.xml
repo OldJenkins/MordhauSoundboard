@@ -6,24 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="4dp"
     app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/person_photo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:visibility="gone"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+
+            android:layout_alignParentTop="false"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cruel_icon" />
 
         <TextView
             android:id="@+id/person_name"
@@ -32,10 +34,14 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
             android:layout_toRightOf="@+id/person_photo"
+            android:fontFamily="@font/medievalsharp"
+            android:text="@string/Commoner"
             android:textAlignment="center"
+            android:textColor="@color/design_default_color_on_secondary"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/isDownloaded"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/person_photo"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,6 +49,8 @@
             android:id="@+id/isDownloaded"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_check_green_24dp" />

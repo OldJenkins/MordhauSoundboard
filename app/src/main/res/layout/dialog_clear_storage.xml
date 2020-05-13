@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Download all Items over mobile data?"
+        android:text="Clear the Storage ?"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +24,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Do you want to Download all the Files that are part of this List? This can save you a lot of Data volume. --- WARNING --- you are not logged into WLAN. This download can be up to 100 mb."
+        android:text="Do you want to Delete all Files that were Downloaded ?. The Items wont be lost forever. They will just be removed from the local File System to save Disk space. You are always able to download them again."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />

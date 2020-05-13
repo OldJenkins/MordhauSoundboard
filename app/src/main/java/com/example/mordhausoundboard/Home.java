@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,8 +44,10 @@ public class Home extends Fragment {
         parentDataModelArrayList = new ArrayList<>();
         initParentData();
 
-        RVAdapter adapter = new RVAdapter(parentDataModelArrayList,getActivity());
+        RVAdapter adapter = new RVAdapter(parentDataModelArrayList,getActivity(),getParentFragmentManager());
         rv.setAdapter(adapter);
+
+
 
         return v;
     }
@@ -56,45 +57,36 @@ public class Home extends Fragment {
         if(isAlreadyInserted) {
             List<ParentDataModel> list = repository.getAllParents();
             if (!list.isEmpty()) {
-                parentDataModelArrayList.addAll(repository.getAllParents());
+                parentDataModelArrayList.addAll(list);
 
             } else {
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Bernard)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Barbarian)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Curelknight)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Englishman)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Raziel)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Reginald)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Scot)));
-                parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Young)));
-
-
-                for(int i =0;i<parentDataModelArrayList.size();i++){
-
-                    repository.insertParent(parentDataModelArrayList.get(i));
-                }
-                prefs.edit().putBoolean(Constants.PARENTINITIALLIZED,true).apply();
+                fillParentList();
+                insertParentListToDb();
                 Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         }else{
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Bernard)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Barbarian)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Curelknight)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Englishman)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Raziel)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Reginald)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Scot)));
-            parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Young)));
-
-
-            for(int i =0;i<parentDataModelArrayList.size();i++){
-
-                repository.insertParent(parentDataModelArrayList.get(i));
-            }
-            prefs.edit().putBoolean(Constants.PARENTINITIALLIZED,true).apply();
+            fillParentList();
+            insertParentListToDb();
         }
+    }
+
+    void fillParentList(){
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Plain)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Barbarian)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Cruel)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Commoner)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Knight)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Eager)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Foppish)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Raider)));
+        parentDataModelArrayList.add(new ParentDataModel(getResources().getString(R.string.Young)));
+    }
+
+    void insertParentListToDb(){
+        for(int i =0;i<parentDataModelArrayList.size();i++){
+            repository.insertParent(parentDataModelArrayList.get(i));
+        }
+        prefs.edit().putBoolean(Constants.PARENTINITIALLIZED,true).apply();
     }
 
 }

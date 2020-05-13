@@ -5,4 +5,5 @@
     <color name="colorAccent">#FC4445</color>
     <color name="itemcolor">#C4F092</color>
     <color name="gridcard_background">#FFFFFF</color>
+    <color name="parentcard_background">#161a1d</color>
 </resources>

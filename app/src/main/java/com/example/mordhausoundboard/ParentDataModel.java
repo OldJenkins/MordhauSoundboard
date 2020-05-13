@@ -59,4 +59,10 @@ public class ParentDataModel {
     public void setAskedForDownload(boolean askedForDownload) {
         this.askedForDownload = askedForDownload;
     }
+
+    void clearDownloads(){
+        isAllItemsDownloaded = false;
+        isDownloaded = false;
+        isTextDownloaded = false;
+    }
 }

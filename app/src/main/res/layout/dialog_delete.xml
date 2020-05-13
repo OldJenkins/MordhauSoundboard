@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Download all Items over mobile data?"
+        android:text="Delete Saved Files ?"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,30 +24,30 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Do you want to Download all the Files that are part of this List? This can save you a lot of Data volume. --- WARNING --- you are not logged into WLAN. This download can be up to 100 mb."
+        android:text="Do you wante to the delete The Downloaded Files from yor storage to save diskspace ? You can always download the list again."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <Button
-        android:id="@+id/yes"
+        android:id="@+id/btn_delete"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="yes"
+        android:text="Delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/info" />
 
     <Button
-        android:id="@+id/no"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:id="@+id/btn_cancel"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="No"
-        app:layout_constraintEnd_toStartOf="@+id/yes"
+        android:text="Cancel"
+        app:layout_constraintEnd_toStartOf="@+id/btn_delete"
         app:layout_constraintTop_toBottomOf="@+id/info" />
 </androidx.constraintlayout.widget.ConstraintLayout>

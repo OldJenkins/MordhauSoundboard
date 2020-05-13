@@ -88,4 +88,10 @@ public class ChildDataModel {
     public void setRawname(String rawname) {
         this.rawname = rawname;
     }
+
+    // Check if items are the same BUT do not compare the url & favourite & downloadstat cause it will always be different
+    public boolean AlmostEquals(ChildDataModel that){
+        return this.getRawname().equals(that.getRawname());
+    }
+
 }

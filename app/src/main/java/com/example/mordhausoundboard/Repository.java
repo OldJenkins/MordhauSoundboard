@@ -36,6 +36,10 @@ class Repository {
 
     }
 
+    int getParentCount(){
+        return daoParentData.getCount();
+    }
+
     ParentDataModel getParent(String name){
         return daoParentData.getParent(name);
     }
@@ -58,6 +62,14 @@ class Repository {
 
     void delete (ChildDataModel child) {
         new deleteAsyncTask(daoChildData).execute(child);
+    }
+
+    void deleteAll () {
+        new deleteAllAsyncTask(daoChildData).execute();
+    }
+
+    void deleteAllChildsWith (String parent) {
+        new deleteAllChildsWithAsyncTask(daoChildData).execute(parent);
     }
 
     void insertAll (List<ChildDataModel> childList) {new InsertAllAsyncTask(daoChildData).execute(childList);}
@@ -152,4 +164,33 @@ class Repository {
         }
     }
 
+    private static class deleteAllAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
+
+        private DaoChildData mAsyncTaskDao;
+
+        deleteAllAsyncTask(DaoChildData dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final ChildDataModel... params) {
+            mAsyncTaskDao.deleteAll();
+            return null;
+        }
+    }
+
+    private static class deleteAllChildsWithAsyncTask extends AsyncTask<String, Void, Void> {
+
+        private DaoChildData mAsyncTaskDao;
+
+        deleteAllChildsWithAsyncTask(DaoChildData dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final String... params) {
+            mAsyncTaskDao.deleteAllChildsWith(params[0]);
+            return null;
+        }
+    }
 }
