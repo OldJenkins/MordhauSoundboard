@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/gridcard_background"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="#E8D0D0"
     app:cardCornerRadius="2dp"
     app:cardElevation="6dp">
 
@@ -32,7 +32,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/isDownloaded"
             app:layout_constraintStart_toEndOf="@+id/btn_favourite"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="#000000"/>
 
         <com.github.ivbaranov.mfb.MaterialFavoriteButton
             android:id="@+id/btn_favourite"
@@ -40,7 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:mfb_color="black" />
 
         <ImageView
             android:id="@+id/isDownloaded"

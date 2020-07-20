@@ -8,6 +8,7 @@
     android:layout_margin="4dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="#E8D0D0"
     app:cardCornerRadius="4dp"
     app:cardElevation="4dp">
 
@@ -51,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_check_green_24dp" />

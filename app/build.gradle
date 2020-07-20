@@ -47,4 +47,9 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-ads:19.1.0'
     implementation 'com.flipboard:bottomsheet-core:1.5.3'
+    implementation 'com.github.GrenderG:Toasty:1.4.2'
+
+    implementation 'com.mindorks.android:prdownloader:0.6.0'
+
+    implementation 'com.github.caneryilmaz:ZionFileDownloader:0.1.1'
 }

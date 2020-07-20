@@ -17,7 +17,8 @@
         android:text="Clear Storage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Clear Storage" />
+        tools:text="Clear Storage"
+        />
 
     <Button
         android:id="@+id/btn_privacy"
@@ -40,14 +41,6 @@
         app:layout_constraintStart_toEndOf="@+id/btn_clear"
         app:layout_constraintTop_toTopOf="@+id/btn_clear" />
 
-    <Button
-        android:id="@+id/btn_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="test Dialog"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_clear" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
