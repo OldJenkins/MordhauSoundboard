@@ -87,7 +87,7 @@ public class Settings extends AppCompatActivity {
                                parentDataModels.get(i).setAllItemsDownloaded(false);
                                updateAllChilds(parentDataModels.get(i));
                            }
-                           //TODO STRINGS
+
                            Toasty.success(Settings.this, getResources().getString(R.string.storage_cleared), Toast.LENGTH_SHORT).show();
                            updateFolderSize();
                            dialog.dismiss();
@@ -108,13 +108,7 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        btn_privacy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://drinkhub.eu/Privacy_policies/Mordhau.txt"));
-                startActivity(browserIntent);
-            }
-        });
+
 
         updateFolderSize();
 

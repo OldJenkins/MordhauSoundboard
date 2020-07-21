@@ -111,17 +111,8 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
         if (id == R.id.action_spend) {
             final Dialog dialog = new Dialog(MainActivity.this);
             dialog.setContentView(R.layout.dialog_donate);
-            Button btn_donate = dialog.findViewById(R.id.btn_tip);
             Button btn_close = dialog.findViewById(R.id.btn_close);
 
-            btn_donate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://paypal.me/NormanLambert"));
-                    startActivity(browserIntent);
-                }
-            });
 
             btn_close.setOnClickListener(new View.OnClickListener() {
                 @Override
