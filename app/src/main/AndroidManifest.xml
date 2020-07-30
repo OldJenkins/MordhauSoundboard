@@ -49,7 +49,7 @@
         </activity>
 
         <activity
-            android:name="com.norman.mordhausoundboard.Settings"
+            android:name="com.norman.mordhausoundboard.SettingsActivity"
             android:screenOrientation="fullSensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"

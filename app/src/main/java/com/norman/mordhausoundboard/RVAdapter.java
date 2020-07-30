@@ -155,6 +155,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         return parents.size();
     }
 
+    // bad style in know...
     static class PersonViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView parentName;
@@ -171,6 +172,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
     }
 
+    // delete the whole parent with all the childs
     void deleteParent(ParentDataModel parent){
 
         List<ChildDataModel> childList = repository.getmAllChildsbyName(parent.getName());

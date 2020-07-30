@@ -15,7 +15,7 @@ import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 
-public class Home extends Fragment{
+public class HomeFragment extends Fragment{
 
     private Repository repository;
     private ArrayList<ParentDataModel> parentDataModelArrayList;

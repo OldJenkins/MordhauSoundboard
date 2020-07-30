@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.tabs.TabLayout;
@@ -33,8 +32,6 @@ import static com.norman.mordhausoundboard.Constants.REQUEST_ID_MULTIPLE_PERMISS
 
 public class MainActivity extends AppCompatActivity implements BottomSheet.BottomSheetListener{
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
     SharedPreferences prefs;
     Repository repository;
     private int currentAdapterPos;
@@ -52,16 +49,15 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
         toolbar.setTitleTextAppearance(getApplicationContext(),R.style.TitleFont);
         repository = new Repository(getApplication());
 
-        viewPager = findViewById(R.id.viewPager);
+        ViewPager viewPager = findViewById(R.id.viewPager);
         addTabs(viewPager);
 
-        tabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -71,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
 
@@ -80,12 +75,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
         checkAndroidVersion();
     }
 
-    private void addTabs(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new Home(), getResources().getString(R.string.Home));
-        adapter.addFrag(new Favourites(), getResources().getString(R.string.Favourites));
-        viewPager.setAdapter(adapter);
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,13 +87,13 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the HomeFragment/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(MainActivity.this,Settings.class);
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
@@ -112,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
             final Dialog dialog = new Dialog(MainActivity.this);
             dialog.setContentView(R.layout.dialog_donate);
             Button btn_close = dialog.findViewById(R.id.btn_close);
-
 
             btn_close.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -131,7 +120,12 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
     @Override
     public void onButtonClicked(int which) {
 
+        /* This Method is detecting which item on the Bottomsheet has been clicked.
+            it has to be in this Mainactivity because the Bottomsheet requires the using Activity to implement this method ( it cannot be a fragment )
+         */
+
         if(currentAdapterPos==0){
+            //Parents
             switch(which){
                 case 0:
                     rvAdapter.clickDownload();
@@ -145,8 +139,9 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
                     rvAdapter.clickCancel();
                     break;
             }
-            //Parents
+
         }else if(currentAdapterPos==1){
+            //FavouritesFragment
             switch(which){
                 case 0:
                     gridAdapter.clickDownload();
@@ -161,46 +156,23 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
                     gridAdapter.clickCancel();
                     break;
             }
-            //Favourites
         }
 
     }
 
     @Override
     public void onBackPressed(){
+        // leave App
         finish();
         System.exit(0);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        void addFrag(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
+    private void addTabs(ViewPager viewPager) {
+        HomeViewPagerAdapter adapter = new HomeViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new HomeFragment(), getResources().getString(R.string.Home));
+        adapter.addFrag(new FavouritesFragment(), getResources().getString(R.string.Favourites));
+        viewPager.setAdapter(adapter);
     }
-
 
     private void checkAndroidVersion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -209,8 +181,10 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
 
     }
 
-
     private boolean checkAndRequestPermissions() {
+
+        //Checking all required Permissions which are required to run this app
+
         int camera = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA);
         int write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -232,10 +206,8 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
         return true;
     }
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         Log.d("in fragment on request", "Permission callback called-------");
         switch (requestCode) {
             case REQUEST_ID_MULTIPLE_PERMISSIONS: {
@@ -258,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
                     } else {
                         Log.d("in fragment on request", "Some permissions are not granted ask again ");
                         //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
-//                        // shouldShowRequestPermissionRationale will return true
+//                      // shouldShowRequestPermissionRationale will return true
                         //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
                         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                             showDialogOK("If you are not allowing read, you will not be able to save the files to your device",
@@ -278,11 +250,6 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
                         }
                         //permission is denied (and never ask again is  checked)
                         //shouldShowRequestPermissionRationale will return false
-                        else {
-                           // Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
-                                    //.show();
-                            //                            //proceed with logic by disabling the related features or quit the app.
-                        }
                     }
                 }
             }
@@ -299,7 +266,9 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
                 .show();
     }
 
-    void passRVAdapter(RVAdapter  adapter){
+    //Used for passing the adapters to the Fragments
+    //It has to be build like that because of the Bottomsheet (because of method implementation requirement)
+    void passRVAdapter(RVAdapter adapter){
         rvAdapter = adapter;
     }
 

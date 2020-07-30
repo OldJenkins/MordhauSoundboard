@@ -6,14 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Favourites extends Fragment {
+public class FavouritesFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -29,20 +28,24 @@ public class Favourites extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.content_voicetype, container, false);
+
+        // init Repository for database queries
         repository = new Repository((Application) getActivity().getApplicationContext());
+
         mLayoutManager = new GridLayoutManager(getContext(),2);
-
-
-
         mRecyclerView = v.findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+
+        // is shown when no favourites were found
         tv_status = v.findViewById(R.id.tv_status);
 
-
+        // fill adapter with entries from database
         RefreshAdapter();
+
 
         ((MainActivity)getActivity()).passGridAdapter(gridAdapter);
 
