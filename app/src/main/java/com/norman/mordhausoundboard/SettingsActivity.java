@@ -3,6 +3,7 @@ package com.norman.mordhausoundboard;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -104,6 +105,16 @@ public class SettingsActivity extends AppCompatActivity {
                }else{
                    Toast.makeText(SettingsActivity.this, getResources().getString(R.string.storage_empty), Toast.LENGTH_SHORT).show();
                }
+            }
+        });
+
+        btn_privacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://drinkhub.eu/Privacy_policies/Mordhau.txt";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
             }
         });
 
