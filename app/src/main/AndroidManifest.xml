@@ -21,12 +21,7 @@
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true">
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
-        <!--test user -> ca-app-pub-3940256099942544~3347511713-->
-        <!--real user -> ca-app-pub-5866596644217120~2016913504-->
         <activity
             android:name="com.norman.mordhausoundboard.MainActivity"
             android:label="@string/app_name"
@@ -49,7 +44,7 @@
         </activity>
 
         <activity
-            android:name="com.norman.mordhausoundboard.Settings"
+            android:name="com.norman.mordhausoundboard.SettingsActivity"
             android:screenOrientation="fullSensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"

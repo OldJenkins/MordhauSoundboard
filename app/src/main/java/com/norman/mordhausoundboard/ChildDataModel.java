@@ -1,5 +1,10 @@
 package com.norman.mordhausoundboard;
 
+/*
+This Model is used to represent a Single Sound File
+It is also a Model inside of the Room Database
+ */
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -15,6 +20,9 @@ public class ChildDataModel {
     private String url;
     private boolean favourite;
     private boolean isDownloaded;
+
+    // This is the actual Name of the Files which were downloaded | example: Attack_yell_3.mp3
+    // It is existing, because it is more unique than the "name", which will be formatted to be better to read for the user
     private String rawname;
 
 
@@ -88,7 +96,7 @@ public class ChildDataModel {
         this.rawname = rawname;
     }
 
-    // Check if items are the same BUT do not compare the url & favourite & downloadstat cause it will always be different
+    // Check if items are the same BUT do not compare the url & favourite & downloadstate cause it will always be different
      boolean AlmostEquals(ChildDataModel that){
         return this.getRawname().equals(that.getRawname());
      }

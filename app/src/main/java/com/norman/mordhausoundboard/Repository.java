@@ -1,10 +1,15 @@
 package com.norman.mordhausoundboard;
 
+// The Database Repository for both Parent- and ChildModel
+// here you can make your async Database Queries , since its a bad behaviour running database calls on the main Thread
+
 import android.app.Application;
 import android.os.AsyncTask;
 import java.util.List;
 
 class Repository {
+
+
 
     private DaoChildData daoChildData;
     private DaoParentData daoParentData;

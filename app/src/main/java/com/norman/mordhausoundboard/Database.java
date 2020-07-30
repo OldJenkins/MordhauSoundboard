@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+// If you change Anything in the entry classes (ChildDataModel,ParentDataModel) you have to rise the Version number, else you will get an error
 @androidx.room.Database(entities = {ChildDataModel.class,ParentDataModel.class}, version = 9)
 public abstract class Database extends RoomDatabase {
     public abstract DaoChildData personDao();

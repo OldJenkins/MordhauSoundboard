@@ -221,9 +221,9 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
         @Override
         protected void onPreExecute() {
+
             dialog = new ProgressDialog(activity);
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
             dialog.setCancelable(true);
             dialog.setMessage(activity.getResources().getString(R.string.download_dialog_info));
             dialog.setTitle(activity.getResources().getString(R.string.download_dialog_title));
@@ -243,6 +243,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
                     e.printStackTrace();
                 }
 
+                // download each file
                 if(downloadFile(child)) {
 
                     dialog.incrementProgressBy(1);
@@ -282,6 +283,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         }
     }
 
+    // handle a download of a single file
     boolean downloadFile(ChildDataModel child){
         boolean flag = true;
         boolean downloading =true;
