@@ -10,8 +10,8 @@
     <string name="Raider">Raider</string>
     <string name="Barbarian">Barbarian</string>
     <string name="Young">Young</string>
-    <string name="downloadPath">https://drinkhub.eu/MordhauSoundboard/sounds/</string>
-    <string name="rootPath">https://drinkhub.eu/MordhauSoundboard/</string>
+    <string name="downloadPath">https://46.101.247.204/server/MordhauSoundBoard/sounds/</string>
+    <string name="rootPath">https://46.101.247.204/server/MordhauSoundBoard/</string>
     <string name="fetching_error"> Sorry :( Could not fetch any Items</string>
     <string name="Media_not_found"> Sorry, the Media could not be found :(</string>
     <string name="Home">Home</string>
