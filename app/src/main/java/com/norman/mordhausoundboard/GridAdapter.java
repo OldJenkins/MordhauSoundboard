@@ -32,19 +32,18 @@ import java.util.List;
 import es.dmoral.toasty.Toasty;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
-    private List<ChildDataModel> mDataset;
-    private Context context;
-    private Repository repository;
-    private SharedPreferences prefs;
-    private Activity activity;
+    private final List<ChildDataModel> mDataset;
+    private final Context context;
+    private final Repository repository;
+    private final SharedPreferences prefs;
+    private final Activity activity;
     private boolean deleted;
     private BottomSheet sheet;
-    private FragmentManager fragmentManager;
+    private final FragmentManager fragmentManager;
     private int currentAdapterPosition;
 
-
     // Checking if the Adapter is called from voicetype or from favourites to handle different onclick events
-    private int ActivityID;
+    private final int ActivityID;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
@@ -60,23 +59,16 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
             cardView = v.findViewById(R.id.cardView);
             btn_favourite = v.findViewById(R.id.btn_favourite);
             img_dowonloaded = v.findViewById(R.id.isDownloaded);
-
-
         }
-    }
-
-    ArrayList<ChildDataModel> getAllItems (){
-        return new ArrayList<>(mDataset);
     }
 
     ChildDataModel getItem(int position){
         return mDataset.get(position);
     }
 
-    GridAdapter(List<ChildDataModel> myDataset, Context mCOntext, int ActivityID, Activity activity,FragmentManager fragmentManager) {
-        Log.d("TEST",myDataset.get(0).getName());
+    GridAdapter(List<ChildDataModel> myDataset, Context mContext, int ActivityID, Activity activity,FragmentManager fragmentManager) {
         mDataset = myDataset;
-        context = mCOntext;
+        context = mContext;
         repository = new Repository((Application) context.getApplicationContext());
         this.ActivityID = ActivityID;
         this.activity = activity;
@@ -88,7 +80,6 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     public GridAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
 
-
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.cardview_grid, parent, false);
 
@@ -97,11 +88,10 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        Log.d("TEST","Printing Names onBindView Holder"+mDataset.get(position));
         if (!getItem(position).isDownloaded()) {
             holder.img_dowonloaded.setVisibility(View.INVISIBLE);
         }
@@ -114,68 +104,44 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         holder.btn_favourite.setFavorite(mDataset.get(position).isFavourite());
         if(mDataset.get(position).isDownloaded()) holder.img_dowonloaded.setVisibility(View.VISIBLE);
         else holder.img_dowonloaded.setVisibility(View.GONE);
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                MediaPlayer mediaPlayer = new MediaPlayer();
+        holder.cardView.setOnClickListener(v -> {
+
+            try {
+                // We try to tyke the path to the Database first
+                // if this doesn't exists, we have to take the Server url
+                playSound(mDataset.get(position).getUrl());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
                 try {
-
-                    mediaPlayer.setDataSource(mDataset.get(position).getUrl());
-                    mediaPlayer.prepareAsync();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mp.start();
-                        }
-                    });
-                    //mediaPlayer.start();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                    try {
-                        mediaPlayer.setDataSource(activity.getResources().getString(R.string.downloadPath) + mDataset.get(position).getParent() +"/" + mDataset.get(position).getRawname());
-                        Toasty.info(context, activity.getResources().getString(R.string.downloadPath) + mDataset.get(position).getParent() +"/" + mDataset.get(position).getRawname(), Toast.LENGTH_SHORT).show();
-                        mediaPlayer.prepareAsync();
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                                mp.start();
-                            }
-                        });
-                        //mediaPlayer.start();
-                    }catch (IOException a){
-                        Toasty.error(context, context.getResources().getString(R.string.Media_not_found), Toast.LENGTH_SHORT).show();
-                    }
+                    String url = activity.getResources().getString(R.string.fileServerUrl) + mDataset.get(position).getParent() +"/" + mDataset.get(position).getRawname();
+                    playSound(url);
+                }catch (IOException a){
+                    Toasty.error(context, context.getResources().getString(R.string.Media_not_found), Toast.LENGTH_SHORT).show();
                 }
-
             }
+
         });
 
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                sheet = new BottomSheet(position,mDataset.get(position).getName(),Constants.ID_GRID);
-                sheet.show(fragmentManager,"bottomsheet");
-                currentAdapterPosition = position;
-                return true;
-            }
+        holder.cardView.setOnLongClickListener(v -> {
+            sheet = new BottomSheet(position,mDataset.get(position).getName(),Constants.ID_GRID);
+            sheet.show(fragmentManager,"bottomsheet");
+            currentAdapterPosition = position;
+            return true;
         });
 
-        holder.btn_favourite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ChildDataModel child = mDataset.get(position);
-                if(child.isFavourite()){
-                    child.setFavourite(false);
-                    holder.btn_favourite.setFavorite(false);
-                }else{
-                    child.setFavourite(true);
-                    holder.btn_favourite.setFavorite(true);
-                }
-                repository.update(child);
+        holder.btn_favourite.setOnClickListener(v -> {
+            ChildDataModel child = mDataset.get(position);
+            if(child.isFavourite()){
+                child.setFavourite(false);
+                holder.btn_favourite.setFavorite(false);
+            }else{
+                child.setFavourite(true);
+                holder.btn_favourite.setFavorite(true);
             }
+            repository.update(child);
         });
     }
 
@@ -183,6 +149,21 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    void playSound(String url) throws IOException {
+        MediaPlayer mp = new MediaPlayer();
+        try {
+            mp.setDataSource(url);
+            mp.setOnPreparedListener(this::onPrepared);
+            mp.prepareAsync();
+        } catch (IOException e) {
+            System.out.println("could not prepare");
+        }
+    }
+
+    public void onPrepared(MediaPlayer player) {
+        player.start();
     }
 
     void clickDownload(){
@@ -288,7 +269,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         boolean flag = true;
         boolean downloading =true;
         try{
-            String DownloadUrl = activity.getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname();
+            String DownloadUrl = activity.getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname();
+            System.out.println(" DOWNLOAD URL "+DownloadUrl);
             final DownloadManager mManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
             final DownloadManager.Request mRqRequest = new DownloadManager.Request(
                     Uri.parse(DownloadUrl));
@@ -309,7 +291,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
                 c = mManager.query(query);
                 if(c.moveToFirst()) {
                     Log.i ("FLAG","Downloading");
-                    int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    @SuppressLint("Range") int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
                     if (status==DownloadManager.STATUS_SUCCESSFUL) {
                         Log.i ("FLAG","done");
@@ -364,7 +346,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
                 deleted = file.delete();
                 Toasty.info(context, child.getName()+ " "+ context.getResources().getString(R.string.delete_from_storage), Toast.LENGTH_SHORT,true).show();
 
-                child.setUrl(context.getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname());
+                child.setUrl(context.getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname());
 
                 child.setDownloaded(false);
                 repository.update(child);

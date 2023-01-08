@@ -15,9 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
     private int currentAdapterPos;
     RVAdapter rvAdapter;
     GridAdapter gridAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
 
         /* This Method is detecting which item on the Bottomsheet has been clicked.
             it has to be in this Mainactivity because the Bottomsheet requires the using Activity to implement this method ( it cannot be a fragment )
-         */
+        */
 
         if(currentAdapterPos==0){
             //Parents
@@ -182,23 +178,14 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
     }
 
     private boolean checkAndRequestPermissions() {
-
         //Checking all required Permissions which are required to run this app
-
-        int camera = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA);
+        int camera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int read = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         List<String> listPermissionsNeeded = new ArrayList<>();
-        if (write != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        if (camera != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.CAMERA);
-        }
-        if (read != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
+        if (write != PackageManager.PERMISSION_GRANTED) listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (camera != PackageManager.PERMISSION_GRANTED) listPermissionsNeeded.add(Manifest.permission.CAMERA);
+        if (read != PackageManager.PERMISSION_GRANTED) listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
             return false;
@@ -207,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements BottomSheet.Botto
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         Log.d("in fragment on request", "Permission callback called-------");
         switch (requestCode) {
             case REQUEST_ID_MULTIPLE_PERMISSIONS: {

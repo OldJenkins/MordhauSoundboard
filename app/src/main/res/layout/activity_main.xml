@@ -11,9 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- test user ca-app-pub-3940256099942544/6300978111 -->
-        <!-- real user ca-app-pub-5866596644217120/6300058857 -->
-
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout2"
             android:layout_width="match_parent"
@@ -49,6 +46,5 @@
         </androidx.viewpager.widget.ViewPager>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

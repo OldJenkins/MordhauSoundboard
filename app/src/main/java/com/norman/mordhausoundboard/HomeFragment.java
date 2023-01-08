@@ -3,6 +3,7 @@ package com.norman.mordhausoundboard;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import es.dmoral.toasty.Toasty;
 
 public class HomeFragment extends Fragment{
@@ -21,7 +23,7 @@ public class HomeFragment extends Fragment{
     private ArrayList<ParentDataModel> parentDataModelArrayList;
     private SharedPreferences prefs;
     private RVAdapter adapter;
-
+    Logger logger;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +33,9 @@ public class HomeFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.content_main, container, false);
+
+        logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
         repository = new Repository((Application) getActivity().getApplicationContext());
         prefs = getActivity().getSharedPreferences(Constants.PREFS,0);
@@ -47,9 +50,9 @@ public class HomeFragment extends Fragment{
         initParentData();
 
         adapter = new RVAdapter(parentDataModelArrayList,getActivity(),getParentFragmentManager());
+
         rv.setAdapter(adapter);
         ((MainActivity)getActivity()).passRVAdapter(adapter);
-
 
         return v;
     }
@@ -90,7 +93,4 @@ public class HomeFragment extends Fragment{
         }
         prefs.edit().putBoolean(Constants.PARENTINITIALLIZED,true).apply();
     }
-
-
-
 }

@@ -14,22 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import com.downloader.Error;
-import com.downloader.OnCancelListener;
-import com.downloader.OnDownloadListener;
-import com.downloader.OnPauseListener;
-import com.downloader.OnProgressListener;
-import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.PRDownloaderConfig;
-import com.downloader.Progress;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import es.dmoral.toasty.Toasty;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -108,17 +98,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        btn_privacy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String url = "https://drinkhub.eu/Privacy_policies/Mordhau.txt";
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            }
+        btn_privacy.setOnClickListener(v -> {
+            String url = getResources().getString(R.string.fileServerUrl)+"privacy_polocies.txt";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         });
-
-
 
         updateFolderSize();
 
@@ -178,7 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
         }else{
             foldersize_mb = 0;
         }
-        tv_clear_info.setText(String.valueOf(foldersize_mb) + "mb");
+        tv_clear_info.setText(foldersize_mb + "mb");
     }
 
     // update the files that they are not downloaded anymore
@@ -189,7 +174,7 @@ public class SettingsActivity extends AppCompatActivity {
         for(int i = 0;i<childList.size();i++){
             ChildDataModel child = childList.get(i);
             if(child.isDownloaded()) {
-                child.setUrl(getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname());
+                child.setUrl(getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname());
                 child.setDownloaded(false);
                 repository.update(child);
             }
@@ -213,7 +198,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     // delete all files from the storage
     public void deleteRecursive(File fileOrDirectory) {
-
+        repository.deleteAll();
         if (fileOrDirectory.isDirectory()) {
             for (File child : fileOrDirectory.listFiles()) {
                 deleteRecursive(child);

@@ -5,12 +5,12 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="3dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="#E8D0D0"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="#15191c"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:id="@+id/person_photo"
             android:layout_width="100dp"
             android:layout_height="100dp"
-
+            app:cardCornerRadius="16dp"
             android:layout_alignParentTop="false"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -38,7 +38,7 @@
             android:fontFamily="@font/medievalsharp"
             android:text="@string/Commoner"
             android:textAlignment="center"
-            android:textColor="@color/design_default_color_on_secondary"
+            android:textColor="#ffffff"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/isDownloaded"
