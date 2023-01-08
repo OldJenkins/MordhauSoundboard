@@ -9,10 +9,8 @@ import java.util.List;
 
 class Repository {
 
-
-
-    private DaoChildData daoChildData;
-    private DaoParentData daoParentData;
+    private final DaoChildData daoChildData;
+    private final DaoParentData daoParentData;
     private List<ChildDataModel> mAllChildsByName;
     private List<ChildDataModel> mAllFavourites;
     private List<ParentDataModel> mAllParents;
@@ -38,7 +36,6 @@ class Repository {
     List<ParentDataModel> getAllParents() {
         mAllParents = daoParentData.getAllParents();
         return mAllParents;
-
     }
 
     int getParentCount(){
@@ -81,7 +78,7 @@ class Repository {
 
     private static class insertAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         insertAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;
@@ -96,7 +93,7 @@ class Repository {
 
     private static class insertParentAsyncTask extends AsyncTask<ParentDataModel, Void, Void> {
 
-        private DaoParentData mAsyncTaskDao;
+        private final DaoParentData mAsyncTaskDao;
 
         insertParentAsyncTask(DaoParentData dao) {
             mAsyncTaskDao = dao;
@@ -111,7 +108,7 @@ class Repository {
 
     private static class InsertAllAsyncTask extends AsyncTask<List<ChildDataModel>, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         InsertAllAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;
@@ -126,7 +123,7 @@ class Repository {
 
     private static class UpdateAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         UpdateAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;
@@ -141,7 +138,7 @@ class Repository {
 
     private static class UpdateParentAsyncTask extends AsyncTask<ParentDataModel, Void, Void> {
 
-        private DaoParentData mAsyncTaskDao;
+        private final DaoParentData mAsyncTaskDao;
 
         UpdateParentAsyncTask(DaoParentData dao) {
             mAsyncTaskDao = dao;
@@ -156,7 +153,7 @@ class Repository {
 
     private static class deleteAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         deleteAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;
@@ -171,7 +168,7 @@ class Repository {
 
     private static class deleteAllAsyncTask extends AsyncTask<ChildDataModel, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         deleteAllAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;
@@ -186,7 +183,7 @@ class Repository {
 
     private static class deleteAllChildsWithAsyncTask extends AsyncTask<String, Void, Void> {
 
-        private DaoChildData mAsyncTaskDao;
+        private final DaoChildData mAsyncTaskDao;
 
         deleteAllChildsWithAsyncTask(DaoChildData dao) {
             mAsyncTaskDao = dao;

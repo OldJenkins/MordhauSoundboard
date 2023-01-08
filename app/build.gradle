@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 32
     defaultConfig {
         applicationId "com.norman.mordhausoundboard"
-        minSdkVersion 19
-        targetSdkVersion 29
-        versionCode 7
+        minSdkVersion 24
+        targetSdkVersion 32
+        versionCode 9
         versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -17,6 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.norman.mordhausoundboard'
 }
 
 dependencies {
@@ -46,5 +46,4 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.github.GrenderG:Toasty:1.4.2'
     implementation 'com.mindorks.android:prdownloader:0.6.0'
-
 }

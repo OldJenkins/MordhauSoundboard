@@ -1,5 +1,6 @@
 package com.norman.mordhausoundboard;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
@@ -36,30 +37,30 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.net.ssl.HttpsURLConnection;
 import es.dmoral.toasty.Toasty;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> {
 
-    private ArrayList<ParentDataModel> parents;
-    private Activity activity;
+    private final ArrayList<ParentDataModel> parents;
+    private final Activity activity;
     private BottomSheet sheet;
-    private Repository repository;
-    private SharedPreferences prefs;
+    private final Repository repository;
+    private final SharedPreferences prefs;
     private ArrayList<ChildDataModel> TEMPChildList;
-    private FragmentManager fragmentManager;
+    private final FragmentManager fragmentManager;
     private String tempParentName;
     private DownloadManager mManager;
     private boolean downloading = true;
     private boolean globalDownload = true;
     private ArrayList<Long> idList;
-    private int idCounter = 0;
 
     RVAdapter(ArrayList<ParentDataModel> parents, Activity activity, FragmentManager fragmentManager){
         this.parents = parents;
@@ -81,13 +82,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
     void setParentWith(ParentDataModel parent){
         for(int i = 0;i<parents.size();i++) {
             if (parents.get(i).getName().equals(parent.getName())) {
-                parents.set(i,parent);
+                parents.set(i, parent);
             }
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PersonViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull PersonViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         holder.parentName.setText(parents.get(position).getName());
 
         if(parents.get(position).isAllItemsDownloaded()){
@@ -124,24 +125,18 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 break;
         }
 
-        holder.cv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, VoiceTypeActivity.class);
-                intent.putExtra(Constants.ITEMNAME, parents.get(position).getName());
-                activity.startActivity(intent);
-            }
+        holder.cv.setOnClickListener(v -> {
+            Intent intent = new Intent(activity, VoiceTypeActivity.class);
+            intent.putExtra(Constants.ITEMNAME, parents.get(position).getName());
+            activity.startActivity(intent);
         });
 
-        holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
+        holder.cv.setOnLongClickListener(v -> {
 
-                sheet = new BottomSheet(position,parents.get(position).getName(),Constants.ID_HOME);
-                sheet.show(fragmentManager,"bottomsheet");
+            sheet = new BottomSheet(position,parents.get(position).getName(),Constants.ID_HOME);
+            sheet.show(fragmentManager,"bottomsheet");
 
-                return true;
-            }
+            return true;
         });
     }
 
@@ -183,7 +178,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 File file = new File(child.getUrl());
                 file.delete();
 
-                child.setUrl(activity.getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname());
+                child.setUrl(activity.getResources().getString(R.string.httpServerUrl)+child.getParent()+"/"+child.getRawname());
                 child.setDownloaded(false);
                 repository.update(child);
             }
@@ -206,14 +201,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         notifyDataSetChanged();
     }
 
-    public class getAllContentAsync extends AsyncTask<String,Void,String> {
+    public class fetchAllFileNames extends AsyncTask<String,Void,String> {
         String name;
         String json_url;
         String JSON_STRING;
 
         @Override
         protected void onPreExecute() {
-            json_url = activity.getResources().getString(R.string.rootPath)+"getDirectorycontent.php";
+            json_url = activity.getResources().getString(R.string.httpServerUrl);
         }
 
         @Override
@@ -222,16 +217,15 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
             name = params[0];
             String data;
 
-
             try {
                 URL url = new URL(json_url);
-                HttpsURLConnection httpsURLConnection = (HttpsURLConnection)url.openConnection();
-                httpsURLConnection.setConnectTimeout(15000);
-                httpsURLConnection.setReadTimeout(15000);
-                httpsURLConnection.setRequestMethod("POST");
-                httpsURLConnection.setDoOutput(true);
-                OutputStream OS = httpsURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+                HttpURLConnection http = (HttpURLConnection)url.openConnection();
+                http.setConnectTimeout(15000);
+                http.setReadTimeout(15000);
+                http.setRequestMethod("POST");
+                http.setDoOutput(true);
+                OutputStream OS = http.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, StandardCharsets.UTF_8));
 
                 data = URLEncoder.encode("name","UTF-8") + "=" +URLEncoder.encode(name,"UTF-8");
 
@@ -240,7 +234,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 bufferedWriter.close();
                 OS.close();
 
-                InputStream inputStream = httpsURLConnection.getInputStream();
+                InputStream inputStream = http.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 StringBuilder stringBuilder = new StringBuilder();
                 while((JSON_STRING = bufferedReader.readLine())!=null){
@@ -249,13 +243,15 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
                 bufferedReader.close();
                 inputStream.close();
-                httpsURLConnection.disconnect();
+                http.disconnect();
 
                 return stringBuilder.toString().trim();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                Toast.makeText(activity, e+"", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
+                Toast.makeText(activity,e+"", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
             return null;
@@ -268,7 +264,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
         @Override
         protected void onPostExecute(String result) {
-
+            Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
             if (!TextUtils.isEmpty(result)) {
 
                 if (!result.equals("") && !result.contains("failed") && isJSONValid(result)) {
@@ -277,11 +273,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                     Type listType = new TypeToken<List<ChildDataModel>>() {
                     }.getType();
 
+                    System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"+result);
                     List<ChildDataModel> newList = gson.fromJson(result, listType);
                     List<ChildDataModel> oldList = repository.getmAllChildsbyName(name);
+                    System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"+newList);
 
-                    for(int i = 0;i < newList.size();i++){
-                        for(int j  = 0;j<oldList.size();j++){
+
+                    for(int i = 0;i <= newList.size();i++){
+                        for(int j  = 0;j<= oldList.size();j++){
                             if(newList.get(i).AlmostEquals(oldList.get(j))){
                                 newList.get(i).setChild(oldList.get(j));
                             }
@@ -292,7 +291,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
                     TEMPChildList = new ArrayList<>(newList);
 
-
                     new DownloadAllContentAsync().execute(parents.get(sheet.getPosition()));
                 }
 
@@ -300,6 +298,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 Toast.makeText(activity, R.string.fetching_error, Toast.LENGTH_SHORT).show();
             }
         }
+
         boolean isJSONValid(String test) {
             try {
                 new JSONObject(test);
@@ -322,12 +321,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         int failCounter = 0;
         ParentDataModel parent;
 
-
         @Override
         protected void onPreExecute() {
             dialog = new ProgressDialog(activity);
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            //TODO STRINGS!!!!!!!!!!!!!
+            //TODO translation
             dialog.setCancelable(false);
             dialog.setMessage(activity.getResources().getString(R.string.downloading_message));
             dialog.setTitle("Downloading "+tempParentName);
@@ -340,11 +338,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                     downloading = false;
                     globalDownload = false;
                     while(i<idList.size()){
-                        //removing Elements out of the downloading queue
-
-                        //mManager.remove(idList.get(i));
-
-                        //System.out.println("removing "+idList.get(i) + " out of queue list");
                         i++;
                     }
                     Toasty.info(activity, activity.getResources().getString(R.string.download_canceled), Toast.LENGTH_SHORT, true).show();
@@ -413,7 +406,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 TEMPChildList.clear();
                 setParentWith(parent);
                 tempParentName = "";
-                idCounter = 0;
                 idList = new ArrayList<>();
 
             }
@@ -422,7 +414,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 TEMPChildList.clear();
                 setParentWith(parent);
                 tempParentName = "";
-                idCounter = 0;
                 idList = new ArrayList<>();
             }
             else Toasty.info(activity, activity.getResources().getString(R.string.fail_downloading_part1) +" "+ failCounter +" "+activity.getResources().getString(R.string.fail_downloading_part2), Toast.LENGTH_SHORT, true).show();
@@ -435,7 +426,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         boolean flag = true;
         downloading =true;
         try{
-            String DownloadUrl = activity.getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname();
+            String DownloadUrl = activity.getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname();
             mManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
 
             final DownloadManager.Request mRqRequest = new DownloadManager.Request(
@@ -447,8 +438,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
             //write download id into the queue
             idList.add(idDownLoad);
-            idCounter++;
-
 
             DownloadManager.Query query = null;
             query = new DownloadManager.Query();
@@ -465,7 +454,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 c = mManager.query(query);
                 if(c.moveToFirst()) {
 
-                    int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    @SuppressLint("Range") int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
                     if (status==DownloadManager.STATUS_SUCCESSFUL) {
 
@@ -525,7 +514,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
             if(parent.isTextDownloaded()){
                 new DownloadAllContentAsync().execute(parent);
             }else{
-                new getAllContentAsync().execute(parent.getName());
+                new fetchAllFileNames().execute(parent.getName());
             }
         }else Toasty.warning(activity, activity.getResources().getString(R.string.already_downloaded), Toast.LENGTH_SHORT, true).show();
 

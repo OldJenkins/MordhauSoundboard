@@ -10,8 +10,8 @@
     <string name="Raider">Raider</string>
     <string name="Barbarian">Barbarian</string>
     <string name="Young">Young</string>
-    <string name="downloadPath">https://46.101.247.204/server/MordhauSoundBoard/sounds/</string>
-    <string name="rootPath">https://46.101.247.204/server/MordhauSoundBoard/</string>
+    <string name="fileServerUrl">https://norman-server.de:8443/sounds/</string>
+    <string name="httpServerUrl">https://norman-server.de:8443/</string>
     <string name="fetching_error"> Sorry :( Could not fetch any Items</string>
     <string name="Media_not_found"> Sorry, the Media could not be found :(</string>
     <string name="Home">Home</string>
@@ -24,7 +24,7 @@
     <string name="success_downloading">Downloaded All Items</string>
     <string name="fail_downloading_part1">Could not download </string>
     <string name="fail_downloading_part2"> Items</string>
-    <string name="no_favourites">No favourites yet</string>
+    <string name="no_favourites">There are no favourites yet...</string>
     <string name="fail_download_items"> Items could not be fetched </string>
     <string name="deleted_item_suffix"> was deleted from Storage </string>
     <string name="not_deleted_item"> Could not Delete Item from Storage </string>
@@ -46,9 +46,9 @@
     <string name="storage_empty"> storage is already empty</string>
     <string name="clear_storage"> Clear Storage ?</string>
     <string name="background"> Background</string>
-    <string name="clear_storage_text"> Do you want to the delete The Downloaded Files from yor storage to save diskspace ? You can always download the list again.</string>
+    <string name="clear_storage_text"> Do you want to the delete The Downloaded Files from yor storage to save disks pace ? You can always download the list again.</string>
     <string name="clear_storage_text_all">Do you want to Delete all Files that were Downloaded ?. The Items wont be lost forever. They will just be removed from the local File System to save Disk space. You are always able to download them again.</string>
-
+    <string name="tumbleweed">tumbleweed</string>
 
 
 </resources>

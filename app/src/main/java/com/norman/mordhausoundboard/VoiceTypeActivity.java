@@ -1,6 +1,6 @@
 package com.norman.mordhausoundboard;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.Dialog;
 import android.app.DownloadManager;
@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Environment;
@@ -29,7 +29,6 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,43 +40,37 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.net.ssl.HttpsURLConnection;
-
 import es.dmoral.toasty.Toasty;
 
 public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.BottomSheetListener {
 
     RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
     String name;
     boolean isRefresh;
     SharedPreferences prefs;
     boolean isListAlreadyDownloaded;
     private Repository repository;
-    boolean isFileDownloaded;
     GridAdapter adapter;
     ParentDataModel parent;
     private DownloadManager mManager;
     private boolean downloading = true;
     private boolean globalDownload = true;
     private ArrayList<Long> idList;
-    private int idCounter = 0;
-    private ArrayList<ChildDataModel> TEMPChildList;
+    View loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicetype);
         Toolbar toolbar = findViewById(R.id.toolbar);
-
 
         name = getIntent().getStringExtra(Constants.ITEMNAME);
         toolbar.setTitle(name);
@@ -91,15 +84,16 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
         repository = new Repository((Application) getApplicationContext());
         parent = repository.getParent(name);
 
-
         // return TRUE if the Parent name list, is inside of the Saved List
         isListAlreadyDownloaded = prefs.getString(Constants.DOWNLOADLIST,"").contains(name);
 
-        mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         mRecyclerView = findViewById(R.id.rv);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        //mRecyclerView.setAdapter(new GridAdapter(SoundItemList,getApplicationContext()));
+
+        loader = findViewById(R.id.loader);
+        loader.setVisibility(View.INVISIBLE);
 
         //if The List was already downloaded before, the List wil be catched from the Database
         if(!isListAlreadyDownloaded) {
@@ -144,7 +138,6 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
                     handleDownloadByNMobileData(howManyItems);
                 }
             }else Toasty.info(this, getResources().getString(R.string.items_already_downloaded), Toast.LENGTH_SHORT).show();
-            //TODO IMPLEMENT DIALOG TO SAY FAVOURITES ARE DELETED
             return true;
         }
         if (id == R.id.action_delete) {
@@ -210,49 +203,50 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
 
         @Override
         protected void onPreExecute() {
-            json_url = getResources().getString(R.string.rootPath)+"getDirectorycontent.php";
-
+            json_url = getResources().getString(R.string.httpServerUrl);
+            loader.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected String doInBackground(String... params) {
-
             name = params[0];
-            String data;
 
             try {
                 URL url = new URL(json_url);
-                HttpsURLConnection httpsURLConnection = (HttpsURLConnection)url.openConnection();
-                httpsURLConnection.setConnectTimeout(15000);
-                httpsURLConnection.setReadTimeout(15000);
-                httpsURLConnection.setRequestMethod("POST");
-                httpsURLConnection.setDoOutput(true);
-                OutputStream OS = httpsURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+                HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept","application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
 
-                data = URLEncoder.encode("name","UTF-8") + "=" +URLEncoder.encode(name,"UTF-8");
+                OutputStream OS = connection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, StandardCharsets.UTF_8));
 
-                bufferedWriter.write(data);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("name", name);
+
+                bufferedWriter.write(String.valueOf(jsonParam));
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 OS.close();
 
-                InputStream inputStream = httpsURLConnection.getInputStream();
+                InputStream inputStream = connection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 StringBuilder stringBuilder = new StringBuilder();
                 while((JSON_STRING = bufferedReader.readLine())!=null){
-                    stringBuilder.append(JSON_STRING+"\n");
+                    stringBuilder.append(JSON_STRING).append("\n");
                 }
 
                 bufferedReader.close();
                 inputStream.close();
-                httpsURLConnection.disconnect();
+                connection.disconnect();
 
                 return stringBuilder.toString().trim();
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
             return null;
@@ -271,14 +265,11 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
                 if (!result.equals("") && !result.contains("failed") && isJSONValid(result)) {
 
                     Gson gson = new Gson();
-                    Type listType = new TypeToken<List<ChildDataModel>>() {
-                    }.getType();
-
-                    List<ChildDataModel> newList = gson.fromJson(result, listType);
+                    JsonResponse response = gson.fromJson(result, JsonResponse.class);
+                    List<ChildDataModel> newList = response.name_array;
                     ArrayList<ChildDataModel> newArrayList = new ArrayList<>(newList);
 
                     List<ChildDataModel> oldList = repository.getmAllChildsbyName(name);
-
                     // Checks if the new item list is equal to the existing one to get new added Files
                     for(int i = 0;i < newList.size();i++){
                         for(int j  = 0;j<oldList.size();j++){
@@ -293,6 +284,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
                     prefs.edit().putString(Constants.DOWNLOADLIST,prefs.getString(Constants.DOWNLOADLIST,"")+"%"+name).apply();
                     adapter = new GridAdapter(removeDataSuffix(newArrayList),getApplicationContext(),0,VoiceTypeActivity.this,getSupportFragmentManager());
                     mRecyclerView.setAdapter(adapter);
+                    loader.setVisibility(View.INVISIBLE);
 
                 }
 
@@ -308,8 +300,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
             try {
                 new JSONObject(test);
             } catch (JSONException ex) {
-                // edited, to include @Arthur's comment
-                // e.g. in case JSONArray is valid as well...
+
                 try {
                     new JSONArray(test);
                 } catch (JSONException ex1) {
@@ -319,6 +310,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
             return true;
         }
     }
+
 
     public class DownloadAllContentAsync extends AsyncTask<ParentDataModel,Void,String> {
         ProgressDialog dialog;
@@ -331,7 +323,6 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
             dialog = new ProgressDialog(VoiceTypeActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             dialog.setCancelable(false);
-            //TODO STRINGS!!!!!!!!!!!!!
             dialog.setMessage(getResources().getString(R.string.downloading_message));
             dialog.setTitle("Downloading...");
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -353,11 +344,8 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
                     adapter.notifyDataSetChanged();
                 }
             });
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.background), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();//dismiss dialog
-                }
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.background), (dialog, which) -> {
+                dialog.dismiss();//dismiss dialog
             });
             dialog.show();
         }
@@ -366,7 +354,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
         protected String doInBackground(ParentDataModel... params) {
 
             parent = params[0];
-            TEMPChildList = (ArrayList<ChildDataModel>) repository.getmAllChildsbyName(parent.getName());
+            ArrayList<ChildDataModel> TEMPChildList = (ArrayList<ChildDataModel>) repository.getmAllChildsbyName(parent.getName());
             TEMPChildList = removeDownloadedItems(TEMPChildList);
             downloading = true;
             globalDownload = true;
@@ -376,24 +364,20 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
             if(!parent.isAllItemsDownloaded()) {
                 int i = 0;
                 mManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                while(i<TEMPChildList.size() && globalDownload) {
-                    System.out.println("Initializiing the download while downloading: "+downloading +" at pos: "+i);
+                while(i< TEMPChildList.size() && globalDownload) {
 
                     ChildDataModel model = TEMPChildList.get(i);
-                    System.out.println("Downloading +"+model.getName());
                     if (!model.isDownloaded()) {
 
                         if(!downloadFile(model,mManager)) {
                             failCounter++;
-                            System.out.println("Downloading +"+model.getName() + " failed | faliures: "+failCounter);
+
                         }else{
-                            System.out.println("Successfully downloaded "+model.getName());
+
                             model.setDownloaded(true);
                             repository.update(model);
                         }
                         dialog.incrementProgressBy(1);
-                    }else{
-                        System.out.println("skipped "+model.getName()+" is already downloaded");
                     }
                     i++;
                 }
@@ -421,8 +405,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
         boolean flag = true;
         downloading =true;
         try{
-            String DownloadUrl = getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname();
-
+            String DownloadUrl = getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname();
 
             final DownloadManager.Request mRqRequest = new DownloadManager.Request(
                     Uri.parse(DownloadUrl));
@@ -433,8 +416,6 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
 
             //write download id into the queue
             idList.add(idDownLoad);
-            idCounter++;
-            System.out.println("Saved "+ idDownLoad + " to download queue at " +idCounter);
 
             DownloadManager.Query query;
             query = new DownloadManager.Query();
@@ -450,7 +431,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
             while (downloading) {
                 c = mManager.query(query);
                 if(c.moveToFirst()) {
-                    int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    @SuppressLint("Range") int status =c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
                     if (status==DownloadManager.STATUS_SUCCESSFUL) {
 
@@ -493,7 +474,6 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
         }
     }
 
-
     ArrayList<ChildDataModel> removeDataSuffix(ArrayList<ChildDataModel> that){
         for (int i =  0; i<that.size();i++){
             String str = that.get(i).getName();
@@ -510,81 +490,51 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
         return that;
     }
 
-    private boolean checkWifiStatePermission()
-    {
-        String permission = Manifest.permission.ACCESS_WIFI_STATE;
-        int res = checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    boolean isAllDownloaded(){
-        for(int i = 0;i<adapter.getAllItems().size();i++){
-            if (!adapter.getItem(i).isDownloaded()) return false;
-        }
-        return true;
-    }
-
     void handleDownloadByNMobileData(final int howManyItems){
         //if(checkWifiStatePermission()) {
-            //Toast.makeText(this, "permission is granted", Toast.LENGTH_SHORT).show();
-            ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            assert connManager != null;
-            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        //Toast.makeText(this, "permission is granted", Toast.LENGTH_SHORT).show();
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connManager != null;
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
 
-            assert mWifi != null;
-            if (mWifi.isConnected()) {
+        assert mWifi != null;
+        if (mWifi.isConnected()) {
 
 
-                final Dialog dialog = new Dialog(VoiceTypeActivity.this);
-                dialog.setContentView(R.layout.dialog_download_check);
+            final Dialog dialog = new Dialog(VoiceTypeActivity.this);
+            dialog.setContentView(R.layout.dialog_download_check);
 
-                Button yes = dialog.findViewById(R.id.yes);
-                Button no = dialog.findViewById(R.id.no);
+            Button yes = dialog.findViewById(R.id.yes);
+            Button no = dialog.findViewById(R.id.no);
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        new DownloadAllContentAsync().execute(parent);
-                    }
-                });
+            yes.setOnClickListener(v -> {
+                dialog.dismiss();
+                new DownloadAllContentAsync().execute(parent);
+            });
 
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+            no.setOnClickListener(v -> dialog.dismiss());
 
-                dialog.show();
-                // Do whatever
+            dialog.show();
+            // Do whatever
 
-            } else {
+        } else {
 
-                final Dialog dialog = new Dialog(VoiceTypeActivity.this);
-                dialog.setContentView(R.layout.dialog_internet_check);
-                Button yes = dialog.findViewById(R.id.yes);
-                Button no = dialog.findViewById(R.id.no);
+            final Dialog dialog = new Dialog(VoiceTypeActivity.this);
+            dialog.setContentView(R.layout.dialog_internet_check);
+            Button yes = dialog.findViewById(R.id.yes);
+            Button no = dialog.findViewById(R.id.no);
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        new DownloadAllContentAsync().execute(parent);
-                    }
-                });
+            yes.setOnClickListener(v -> {
+                dialog.dismiss();
+                new DownloadAllContentAsync().execute(parent);
+            });
 
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+            no.setOnClickListener(v -> dialog.dismiss());
 
-                dialog.show();
-            }
-       //}else Toast.makeText(this, "permission not granted", Toast.LENGTH_SHORT).show();
+            dialog.show();
+        }
+        //}else Toast.makeText(this, "permission not granted", Toast.LENGTH_SHORT).show();
     }
 
     void deleteParent(ParentDataModel parent){
@@ -597,7 +547,7 @@ public class VoiceTypeActivity extends AppCompatActivity implements BottomSheet.
                 File file = new File(child.getUrl());
                 file.delete();
 
-                child.setUrl(getResources().getString(R.string.downloadPath)+child.getParent()+"/"+child.getRawname());
+                child.setUrl(getResources().getString(R.string.fileServerUrl)+child.getParent()+"/"+child.getRawname());
                 child.setDownloaded(false);
                 repository.update(child);
             }

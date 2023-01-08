@@ -26,6 +26,9 @@ public interface DaoChildData {
     @Query("SELECT * from Child_Table WHERE favourite = 1 ORDER BY name ASC")
     List<ChildDataModel> getAllFavourites();
 
+    @Query("SELECT * from Child_Table")
+    List<ChildDataModel> getAllChildData();
+
     @Delete
     void delete(ChildDataModel child);
 

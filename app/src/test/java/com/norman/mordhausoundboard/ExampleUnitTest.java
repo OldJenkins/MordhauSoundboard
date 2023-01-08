@@ -1,4 +1,4 @@
-package com.example.mordhausoundboard;
+package com.norman.mordhausoundboard;
 
 import org.junit.Test;
 

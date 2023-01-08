@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,8 +8,8 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="#E8D0D0"
-    app:cardCornerRadius="2dp"
+    app:cardBackgroundColor="#15191c"
+    app:cardCornerRadius="16dp"
     app:cardElevation="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,13 +26,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="4dp"
             android:maxLines="3"
-            android:text="Gude"
+            android:fontFamily="@font/medievalsharp"
+            android:textColor="#ffffff"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/isDownloaded"
             app:layout_constraintStart_toEndOf="@+id/btn_favourite"
-            app:layout_constraintTop_toTopOf="parent"
-            android:textColor="#000000"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.github.ivbaranov.mfb.MaterialFavoriteButton
             android:id="@+id/btn_favourite"
@@ -42,7 +41,7 @@
             android:layout_marginTop="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:mfb_color="black" />
+            app:mfb_color="white" />
 
         <ImageView
             android:id="@+id/isDownloaded"

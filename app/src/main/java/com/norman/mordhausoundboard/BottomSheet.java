@@ -21,9 +21,9 @@ public class BottomSheet extends BottomSheetDialogFragment {
     private BottomSheetListener mListener;
 
     // This variable is used to determine the Activity which is calling this Bottomsheet
-    private int ActivityID;
-    private int position;
-    private String title_txt;
+    private final int ActivityID;
+    private final int position;
+    private final String title_txt;
 
     BottomSheet(int position,String title_txt,int ActivityID) {
         this.position = position;
@@ -50,35 +50,21 @@ public class BottomSheet extends BottomSheetDialogFragment {
             share_img.setVisibility(View.GONE);
         }
 
-        download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onButtonClicked(0);
-                dismiss();
-            }
+        download.setOnClickListener(v1 -> {
+            mListener.onButtonClicked(0);
+            dismiss();
         });
 
-        share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onButtonClicked(1);
-            }
+        share.setOnClickListener(v12 -> mListener.onButtonClicked(1));
+
+        delete.setOnClickListener(v13 -> {
+            mListener.onButtonClicked(2);
+            dismiss();
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onButtonClicked(2);
-                dismiss();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onButtonClicked(3);
-                dismiss();
-            }
+        cancel.setOnClickListener(v14 -> {
+            mListener.onButtonClicked(3);
+            dismiss();
         });
 
          return v;
@@ -99,7 +85,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         try {
             mListener = (BottomSheetListener) context;
         } catch (ClassCastException e){
-            throw new ClassCastException(context.toString()
+            throw new ClassCastException(context
                     + "must implement BottomsheetListener");
         }
     }
