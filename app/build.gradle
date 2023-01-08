@@ -6,7 +6,7 @@ android {
         applicationId "com.norman.mordhausoundboard"
         minSdkVersion 24
         targetSdkVersion 32
-        versionCode 9
+        versionCode 10
         versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
